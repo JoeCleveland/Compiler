@@ -1,0 +1,104 @@
+Lexical Analyzer - Converts input into tokens which point to symbol table entry.
+    Entry contains symbols and symbol type (id, operator, keyword ...) 
+    int x = 4 * 4
+
+    0 -> int, KEYWORD
+    1 -> x, IDENTIFIER
+    2 -> =, OPERATOR
+    3 -> 4, INT_LIT
+    4 -> *, OPERATOR
+    5 -> 4, INT_LIT
+
+Parser - Turns list of symbols into a syntax tree
+
+    in: int x = 4 + 4
+    out:
+    DECLARATION - int
+                - ID - x
+                - =
+                - EXPRESSION - + - INT_LIT - 4
+                                 - INT_LIT - 4
+
+--Language definition--
+
+source example:
+
+fn (int, int) x (int x, flt y){
+    if x == 0 { 
+        x = 5;
+        ret (x, 0);
+    }
+    for int x; x < 5; x++ {
+        x--;
+    }
+    ret (x, y); 
+}
+
+class myObj{
+    int count;
+    met inc{
+        count++
+   }
+}
+
+fn incObj (myObj o){
+    o.inc();
+    int x = x * x == x + x & x | y & x;
+    ptr xp = &x;
+    int a = @xp;
+}
+
+grammar:
+
+Base types from lexical anaysis: 
+ID - Identifiers
+INT_LIT - integer literal
+FLOAT_LIT - float literal
+--all symbols--
+-keywords:
+FN - keyword fn
+MET - keyword met
+IF - keyword if
+ELSE - keyword else
+ELIF - keyword elif
+FOR - keyword for
+WHILE - keyword while
+RET - return
+-type names:
+TYPE_INT
+TYPE_FLOAT
+
+PROGRAM      -> DEFINITION PROGRAM | e
+DEFINITION   -> FUNC_DEF | CLASS_DEF | MET_DEF
+FUNC_DEF     -> "fn" RET_LIST ID PARAM_LIST "{" BODY "}"
+MET_DEF      -> "met" RET_LIST ID PARAMLIST "{" BODY "}"
+RET_LIST     -> "(" TYPE_LIST ")" | e
+TYPE_LIST    -> TYPE_NAME "," TYPE_LIST | TYPE_NAME | e
+PARAM_LIST   -> "(" VAR_LIST ")" | e
+VAR_LIST     -> TYPE_NAME ID "," VAR_LIST | TYPE_NAME ID | e
+BODY         -> STATEMENT BODY | e
+STATEMENT    -> CTL_BLK | ASSIGN | VAR_MOD | VAR_DEF | VOID_CALL | RET
+
+CTL_BLK      -> IF_BLK | ELSE_BLK | ELIF_BLK | FOR_BLK | WHILE_BLK
+IF_BLK       -> "if" EXPRESSION "{" BODY "}" 
+ELSE_BLK     -> "else" EXPRESSION "{" BODY "}" 
+ELIF_BLK     -> "elif" EXPRESSION "{" BODY "}" 
+
+ASSIGN       -> ID "=" EXPRESSION ";"
+VAR_DEF      -> TYPE_NAME ID ";" | TYPE_NAME ID "=" EXPRESSION ";"
+VAR_MOD      -> ID "+=" EXPRESSION ";" | ID "-=" EXPRESSION ";" | ID "++;" | ID "--;"
+VOID_CALL    -> FUNC_CALL ";"
+FUNC_CALL    -> ID "(" EXP_LIST ")" | ID "." ID "(" EXP_LIST ")"
+RET          -> "ret" EXPRESSION | "ret" "(" EXP_LIST ")"
+
+EXP_LIST     -> EXPRESSION ", " EXP_LIST | EXPRESSION
+EXPRESSION   -> EXPRESSION "&" EXPRESSION | ORTERM
+ORTERM       -> OTERM "|" OTERM | EQ_TERM 
+EQ_TERM      -> EQ_TERM "==" EQ_TERM | ARITH_TERM
+ARITH_TERM   -> ARITH_TERM "+" ARITH_TERM | ARITH_TERM "-" ARITH_TERM | MULDV_TERM
+MULDV_TERM   -> MULDV_TERM "*" MULDV_TERM | MULDV_TERM "/" MULDV_TERM | OPERAND
+OPERAND      -> ID | INT_LIT | FLOAT_LIT | FUNC_CALL
+CLASS_DEF    -> "class" ID "{" CLASS_BODY "}"
+CLASS_BODY   -> CLASS_STAT CLASS_BODY | e
+CLASS_STAT   -> VAR_DEF | MET_DEF
+

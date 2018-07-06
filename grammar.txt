@@ -1,0 +1,32 @@
+fn (int, int) swap (int x, int y) {
+    int temp = x;
+    x = y;
+    y = temp;
+    ret (x, y);
+}
+     
+fn main {
+    int a = 5;
+    int b = 6;
+    (a, b) = swap(a, b);
+}
+    
+START = DEF_LIST
+DEF_LIST    -> FUNC_DEF DEF_LIST
+             | ε 
+FUNC_DEF    -> fn RET_LIST id PARAM_LIST STAT_LIST
+RET_LIST    -> ( TYPE_NAME RET_LIST' )
+             | ε 
+RET_LIST'   -> comma TYPE_NAME RET_LIST' 
+             | TYPE_NAME
+             | ε
+PARAM_LIST  -> ( VAR_DEF PARAM_LIST' )
+             | ε
+PARAM_LIST' -> comma VAR_DEF PARAM_LIST'
+             | VAR_DEF
+             | ε 
+VAR_DEF     -> TYPE_NAME id
+
+TYPE_NAME   -> int
+             | float
+
