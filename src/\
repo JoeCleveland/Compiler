@@ -1,9 +1,0 @@
-#ifndef CONSTS_H
-#define CONSTS_H
-
-#define ID 0
-#define TYPE_NAME 1
-#define INT_LIT 2
-#define FLOAT_LIT 3
-
-#endif
