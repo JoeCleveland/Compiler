@@ -20,10 +20,11 @@ namespace symtable {
         data_type type;
     } table_entry;
      
-    class table_tree{
+    class table_tree {
     public:
+        table_tree(table_tree* parent);
         void addEntry(table_entry e);
-        void addChild(table_tree t);
+        void addChild(table_tree* t);
         data_type getType(std::string lexeme);
     private:
         table_tree* parent;
@@ -31,10 +32,21 @@ namespace symtable {
         std::vector<table_entry> table;
     };
 
-    typedef struct {} global_entry;
+    typedef struct {
+        std::string lexeme; 
+    } global_entry;
 
     typedef struct func_entry : global_entry {
+        std::vector<data_type> retTypes;
+        std::vector<data_type> argTypes;
     } func_entry;
     
+    class global_table {
+    public:
+        void addEntry(global_entry e);
+        global_entry getEntry(std::string lexeme); 
+    private:
+        std::vector<global_entry> table;
+    };
 }
 #endif
