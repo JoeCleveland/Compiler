@@ -1,19 +1,12 @@
 #ifndef SYMTABLE_H
 #define SYMTABLE_H
 
+#include "consts.h"
 #include <string>
 #include <vector>
 
-//types for data_type struct
-#define TYPE_USER 0
-#define TYPE_PRIM_INT 1
-#define TYPE_PRIM_FLOAT 2
 namespace symtable {
     
-    typedef struct {
-        int primitive; //TYPE_USER, TYPE_INT etc..
-        int tableIndex; //Index in global table where user type is defined
-    } data_type;
     //entry for table tree entries
     typedef struct {
         std::string lexeme;

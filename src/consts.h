@@ -10,6 +10,17 @@ extern std::string keywords[];
 #define NUMB_KEYWORDS 11 
 typedef int grammar_type;
 
+//types for data_type struct
+#define TYPE_USER 0
+#define TYPE_PRIM_INT 1
+#define TYPE_PRIM_FLOAT 2
+
+typedef struct data_type {
+    int primitive; //TYPE_USER, TYPE_INT etc..
+    int tableIndex; //Index in global table where user type is defined
+    data_type(int p, int t):primitive(p), tableIndex(t) {}
+} data_type;
+
 //non keyword/symbolic types
 #define INVALID -2
 #define END -1

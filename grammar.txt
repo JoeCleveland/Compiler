@@ -15,11 +15,10 @@ START = DEF_LIST
 DEF_LIST    -> FUNC_DEF DEF_LIST
              | ε 
 FUNC_DEF    -> fn RET_LIST id PARAM_LIST STAT_LIST
-RET_LIST    -> ( TYPE_NAME RET_LIST' )
+RET_LIST    -> ( TYPE_NAME RET_LIST' 
              | ε 
 RET_LIST'   -> comma TYPE_NAME RET_LIST' 
-             | TYPE_NAME
-             | ε
+             | )
 PARAM_LIST  -> ( VAR_DEF PARAM_LIST' )
              | ε
 PARAM_LIST' -> comma VAR_DEF PARAM_LIST'

@@ -64,7 +64,7 @@ std::vector<token> lexAnalysis(std::string input){
     std::vector<std::string> tokens = tokenize(input); 
     std::vector<token> output = std::vector<token>(tokens.size() + 1);
 
-    for(int i = 0; i < tokens.size() - 1; i++){
+    for(int i = 0; i < tokens.size(); i++){
         output[i].lexeme = tokens[i];
         //Check if token is a delimeter
         for(int delim = 0; delim < NUMB_DELIMETERS; delim++){

@@ -1,9 +1,0 @@
-parser.cpp:34:1: warning: control reaches end of non-void function [-Wreturn-type]
-}
-^
-1 warning generated.
-Undefined symbols for architecture x86_64:
-  "parser::paramList()", referenced from:
-      parser::funcDef() in parser-fbce15.o
-ld: symbol(s) not found for architecture x86_64
-clang: error: linker command failed with exit code 1 (use -v to see invocation)
