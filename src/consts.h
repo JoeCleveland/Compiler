@@ -21,6 +21,11 @@ typedef struct data_type {
     data_type(int p, int t):primitive(p), tableIndex(t) {}
 } data_type;
 
+typedef struct var_def{
+    data_type type;
+    std::string id;
+    var_def(data_type t, std::string i):type(t), id(i) {}
+} var_def;
 //non keyword/symbolic types
 #define INVALID -2
 #define END -1

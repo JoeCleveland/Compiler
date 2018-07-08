@@ -3,7 +3,6 @@
 #include "lexical.h"
 #include "parser.h"
 
-
 int main(){
     std::string program = std::string("fn (int, int) add fn");
     std::vector<token> tokens = lexAnalysis(program);
