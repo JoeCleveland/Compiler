@@ -19,10 +19,10 @@ RET_LIST    -> ( TYPE_NAME RET_LIST'
              | ε 
 RET_LIST'   -> comma TYPE_NAME RET_LIST' 
              | )
-PARAM_LIST  -> ( VAR_DEF PARAM_LIST' )
+PARAM_LIST  -> ( VAR_DEF PARAM_LIST' 
              | ε
 PARAM_LIST' -> comma VAR_DEF PARAM_LIST'
-             | VAR_DEF
+             | ) 
              | ε 
 VAR_DEF     -> TYPE_NAME id
 
