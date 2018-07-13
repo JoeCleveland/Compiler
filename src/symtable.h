@@ -7,22 +7,17 @@
 
 namespace symtable {
     
-    //entry for table tree entries
-    typedef struct {
-        std::string lexeme;
-        data_type type;
-    } table_entry;
-     
     class table_tree {
     public:
         table_tree(table_tree* parent);
-        void addEntry(table_entry e);
+        table_tree(std::vector<var_dec> t);
+        void addEntry(var_dec d);
         void addChild(table_tree* t);
         data_type getType(std::string lexeme);
     private:
         table_tree* parent;
         std::vector<table_tree*> children;
-        std::vector<table_entry> table;
+        std::vector<var_dec> table;
     };
 
     typedef struct {

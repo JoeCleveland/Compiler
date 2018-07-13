@@ -24,8 +24,31 @@ PARAM_LIST  -> ( VAR_DEF PARAM_LIST'
 PARAM_LIST' -> comma VAR_DEF PARAM_LIST'
              | ) 
              | ε 
-VAR_DEF     -> TYPE_NAME id
-
+VAR_DEC     -> TYPE_NAME id
 TYPE_NAME   -> int
              | float
+STAT_LIST   -> STATEMENT STAT_LIST 
+             | ε
+STATEMENT   -> DECL_STAT | ASSIGN_STAT
+DEC_STAT    -> VAR_DEC DEC_STAT'
+DEC_STAT'   -> ;
+             | = EXPRESSION 
+EXPRESSION  -> AND_TERM EXPRESSION'
+EXPRESSION' -> | EXPRESSION'
+             | ε
+AND_TERM    -> EQ_TERM AND_TERM'
+AND_TERM'   -> & AND_TERM'
+             | ε
+EQ_TERM     -> ADDSUB_TERM EQ_TERM'
+EQ_TERM'    -> == EQ_TERM'
+             | ε
+ADDSUB_TERM -> MULDIV_TERM ADDSUB_TERM'
+ADDSUB_TERM'-> + ADDSUB_TERM'
+             | - ADDSUB_TERM'
+             | ε
+MULDIV_TERM -> VALUE_TERM MULDIV_TERM'
+MULDIV_TERM'-> * MULDIV_TERM'
+             | / MULDIV_TERM'
+             | ε 
+VALUE_TERM  -> id | INT_LIT | FLOAT_LIT | CALL
 

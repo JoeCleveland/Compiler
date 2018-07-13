@@ -15,6 +15,13 @@ void parser::error(std::string message){
     std::cout << message << std::endl;
 }
 
+std::vector<data_type> parser::getTypesFromVarDecs(std::vector<var_dec> decs){
+    std::vector<data_type> output;
+    for(int i = 0; i < decs.size(); i++)
+        output.push_back(decs[i].type);
+    return output;
+}
+
 void parser::defList(){ 
     std::cout << "DEF_LIST" << std::endl;
     if(LOOK == FN){
@@ -31,14 +38,17 @@ void parser::funcDef(){
     //parse id
     std::string fnId = lookahead->lexeme;
     std::cout << fnId << std::endl;
+    advance();//past id
+    //parse param list
+    std::vector<var_dec> fnParamList = paramList();
+    //TODO stat list
+    symtable::table_tree root(fnParamList); 
     //Add entry to global table
     symtable::func_entry thisFunc;
     thisFunc.lexeme = fnId;
     thisFunc.retTypes = fnRetList;
-    advance();//past id
-    //parse param list
-    //paramList();
-    //TODO stat list
+    thisFunc.argTypes = getTypesFromVarDecs(fnParamList); 
+    symbolTable.addEntry(thisFunc);
 }
 
 std::vector<data_type> parser::retList(){
@@ -68,25 +78,25 @@ std::vector<data_type> parser::retListPrime() {
     return list;
 } 
     
-std::vector<var_def> parser::paramList(){
+std::vector<var_dec> parser::paramList(){
     std::cout << "PARAM_LIST" << std::endl;
-    std::vector<var_def> list;
+    std::vector<var_dec> list;
     if(LOOK == O_PAREN){
         advance();
-    	var_def def = varDef();
+    	var_dec dec = varDec();
         list = paramListPrime();	
-	    list.insert(list.begin(), def);
+	    list.insert(list.begin(), dec);
     }
     return list;
 }
 
-std::vector<var_def> parser::paramListPrime(){
-    std::vector<var_def> list;
+std::vector<var_dec> parser::paramListPrime(){
+    std::vector<var_dec> list;
     if(LOOK == COMMA){
         advance();
-    	var_def def = varDef();
+    	var_dec dec = varDec();
         list = paramListPrime();	
-        list.insert(list.begin(), def);
+        list.insert(list.begin(), dec);
     }
     else if(LOOK == C_PAREN)
        advance();
@@ -95,11 +105,12 @@ std::vector<var_def> parser::paramListPrime(){
     return list;
 }
 
-var_def parser::varDef(){
+var_dec parser::varDec(){
     data_type typ = typeName();
     std::string id = lookahead->lexeme;
+    std::cout << id << std::endl;
     advance();// past id 
-    return var_def(typ, id);
+    return var_dec(typ, id);
 }
 
 data_type parser::typeName(){

@@ -1,0 +1,10 @@
+
+fn main {
+    int x;
+    int y = 5 * 5;
+    x = 5 + 5 * y == 25 | x & y;
+    ret x;
+
+    t | t & t
+}
+    

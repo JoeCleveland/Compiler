@@ -9,8 +9,10 @@ table_tree::table_tree(table_tree* parent){
     this->parent = parent;
 }
 
-void table_tree::addEntry(table_entry e){
-    table.push_back(e);
+table_tree::table_tree(std::vector<var_dec> t):table(t){}
+
+void table_tree::addEntry(var_dec d){
+    table.push_back(d);
 }
 
 void table_tree::addChild(table_tree* t){
@@ -19,7 +21,7 @@ void table_tree::addChild(table_tree* t){
 
 data_type table_tree::getType(std::string lexeme){
     for(int i = 0; i < table.size(); i++)
-        if(!table[i].lexeme.compare(lexeme))
+        if(!table[i].id.compare(lexeme))
             return table[i].type;
     throw std::invalid_argument("Lexeme not found in scope");
 }
