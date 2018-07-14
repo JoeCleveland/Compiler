@@ -6,7 +6,6 @@
 token* parser::lookahead;
 std::vector<token>* parser::tokens;
 symtable::global_table parser::symbolTable;
-
 void parser::advance(){
     lookahead++;
 }
@@ -21,6 +20,10 @@ std::vector<data_type> parser::getTypesFromVarDecs(std::vector<var_dec> decs){
         output.push_back(decs[i].type);
     return output;
 }
+
+bool parser::isTypeName(){
+    return LOOK == INT || LOOK == FLOAT;
+} 
 
 void parser::defList(){ 
     std::cout << "DEF_LIST" << std::endl;
@@ -41,7 +44,6 @@ void parser::funcDef(){
     advance();//past id
     //parse param list
     std::vector<var_dec> fnParamList = paramList();
-    //TODO stat list
     symtable::table_tree root(fnParamList); 
     //Add entry to global table
     symtable::func_entry thisFunc;
@@ -49,6 +51,8 @@ void parser::funcDef(){
     thisFunc.retTypes = fnRetList;
     thisFunc.argTypes = getTypesFromVarDecs(fnParamList); 
     symbolTable.addEntry(thisFunc);
+    //Create table tree
+    symtable::table_tree fnTable(fnParamList);
 }
 
 std::vector<data_type> parser::retList(){
@@ -124,4 +128,59 @@ data_type parser::typeName(){
         std::cout << "float" << std::endl;
         return data_type(TYPE_PRIM_FLOAT, -1);
     }
+}
+
+std::vector<std::string> parser::statList(symtable::table_tree* table){
+    std::vector<std::string> code;
+    if(LOOK == O_BRACKET){
+        advance(); //past {
+        code = statement(table); 
+        std::vector<std::string> listCode = statListPrime(table);
+        code.insert(code.end(), listCode.begin(), listCode.end());//concat vectors
+    }
+   return code;
+} 
+
+std::vector<std::string> parser::statListPrime(symtable::table_tree* table){
+    std::vector<std::string> code;
+    if(LOOK == C_BRACKET)
+        advance();
+    else{
+        code = statement(table); 
+        std::vector<std::string> listCode = statListPrime(table);
+        code.insert(code.end(), listCode.begin(), listCode.end());//concat vectors
+    }
+    return code;
+}
+
+
+std::vector<std::string> parser::statement(symtable::table_tree* table){
+    std::vector<std::string> code;
+    if(isTypeName()) //if isTypeName then parse a declaration
+        code = decStat(table);
+    else if(LOOK == ID) 
+        code = assignStat(table);
+    return code;
+}
+
+std::vector<std::string> parser::decStat(symtable::table_tree* table){
+    table->addEntry(varDec());
+    return decStatPrime(table);
+}
+
+std::vector<std::string> parser::decStatPrime(symtable::table_tree* table){
+    if(LOOK == SEMI){
+        advance();
+        return std::vector<std::string>();
+    }
+    else if(LOOK == EQ){
+        advance();
+        std::vector<std::string> code = expression(table, OR);
+        //TODO call translator, set var to result of expression
+        return code;
+    }
+}
+ 
+std::vector<std::string> expression(symtable::table_tree* table, grammar_type op){
+
 }

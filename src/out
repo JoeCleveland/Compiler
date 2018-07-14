@@ -1,4 +1,5 @@
-parser.cpp:127:1: warning: control may reach end of non-void function [-Wreturn-type]
-}
-^
-1 warning generated.
+/tmp/cc9Mz8qc.o: In function `parser::statement[abi:cxx11](symtable::table_tree*)':
+parser.cpp:(.text+0xede): undefined reference to `parser::assignStat[abi:cxx11](symtable::table_tree*)'
+/tmp/cc9Mz8qc.o: In function `parser::decStatPrime[abi:cxx11](symtable::table_tree*)':
+parser.cpp:(.text+0x103f): undefined reference to `parser::expression[abi:cxx11](symtable::table_tree*, int)'
+collect2: error: ld returned 1 exit status

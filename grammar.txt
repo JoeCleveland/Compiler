@@ -27,9 +27,11 @@ PARAM_LIST' -> comma VAR_DEF PARAM_LIST'
 VAR_DEC     -> TYPE_NAME id
 TYPE_NAME   -> int
              | float
-STAT_LIST   -> STATEMENT STAT_LIST 
+STAT_LIST   -> { STATEMENT STAT_LIST'
              | ε
-STATEMENT   -> DECL_STAT | ASSIGN_STAT
+STAT_LIST'  -> STATEMENT STAT_LIST'
+             | }
+STATEMENT   -> DEC_STAT | ASSIGN_STAT
 DEC_STAT    -> VAR_DEC DEC_STAT'
 DEC_STAT'   -> ;
              | = EXPRESSION 
