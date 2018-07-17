@@ -1,2 +1,5 @@
 .*
 !/.gitignore
+a.out
+mac.out
+linux.out

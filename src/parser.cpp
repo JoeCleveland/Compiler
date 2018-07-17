@@ -159,6 +159,7 @@ std::vector<std::string> parser::statListPrime(symtable::table_tree* table){
 
 std::vector<std::string> parser::statement(symtable::table_tree* table){
     std::cout << "STATMENT" << std::endl;
+    std::cout << lookahead->lexeme << std::endl;
     std::vector<std::string> code;
     if(isTypeName()) //if isTypeName then parse a declaration
         code = decStat(table);
@@ -168,6 +169,7 @@ std::vector<std::string> parser::statement(symtable::table_tree* table){
 }
 
 std::vector<std::string> parser::decStat(symtable::table_tree* table){
+    std::cout << "DEC_STAT" << std::endl;
     table->addEntry(varDec());
     return decStatPrime(table);
 }
@@ -179,9 +181,13 @@ std::vector<std::string> parser::decStatPrime(symtable::table_tree* table){
         return std::vector<std::string>();
     }
     else if(LOOK == EQ){
-        advance();
+        advance();//=
         std::vector<std::string> code = expression(table, OR).code;
         //TODO call translator, set var to result of expression
+        if(LOOK == SEMI)
+            advance();//;
+        else
+            error("Semicolon expected");
         return code;
     }
 }
