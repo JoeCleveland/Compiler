@@ -53,6 +53,7 @@ void parser::funcDef(){
     symbolTable.addEntry(thisFunc);
     //Create table tree
     symtable::table_tree fnTable(fnParamList);
+    statList(&fnTable);
 }
 
 std::vector<data_type> parser::retList(){
@@ -131,6 +132,7 @@ data_type parser::typeName(){
 }
 
 std::vector<std::string> parser::statList(symtable::table_tree* table){
+    std::cout << "STAT_LIST" << std::endl;
     std::vector<std::string> code;
     if(LOOK == O_BRACKET){
         advance(); //past {
@@ -142,6 +144,7 @@ std::vector<std::string> parser::statList(symtable::table_tree* table){
 } 
 
 std::vector<std::string> parser::statListPrime(symtable::table_tree* table){
+    std::cout << "STAT_LIST_PRIME" << std::endl;
     std::vector<std::string> code;
     if(LOOK == C_BRACKET)
         advance();
@@ -155,6 +158,7 @@ std::vector<std::string> parser::statListPrime(symtable::table_tree* table){
 
 
 std::vector<std::string> parser::statement(symtable::table_tree* table){
+    std::cout << "STATMENT" << std::endl;
     std::vector<std::string> code;
     if(isTypeName()) //if isTypeName then parse a declaration
         code = decStat(table);
@@ -169,6 +173,7 @@ std::vector<std::string> parser::decStat(symtable::table_tree* table){
 }
 
 std::vector<std::string> parser::decStatPrime(symtable::table_tree* table){
+    std::cout << "DEC_STAT_PRIME" << std::endl;
     if(LOOK == SEMI){
         advance();
         return std::vector<std::string>();
@@ -181,7 +186,12 @@ std::vector<std::string> parser::decStatPrime(symtable::table_tree* table){
     }
 }
  
+std::vector<std::string> parser::assignStat(symtable::table_tree* table){
+    //TODO all of this
+}
+
 parser::exp_ret parser::expression(symtable::table_tree* table, grammar_type op){
+    std::cout << "EXPRESSION: " << op << std::endl;
     grammar_type next_call;
     switch(op){
         case OR:   next_call = AND; break;
@@ -190,13 +200,41 @@ parser::exp_ret parser::expression(symtable::table_tree* table, grammar_type op)
         case PLUS:  next_call = MULT; break;//MULT is both * and /
         case MULT: next_call = ID; break;//ID is for all value terms
     }
-    parser::exp_ret leftSide = expression(table, next_call);
-    parser::exp_ret rightSide = expressionPrime(table, op, leftSide.result);
-    parser::exp_ret combine;
+    exp_ret leftSide;
+    if(next_call == ID)
+        leftSide = valueTerm(table);
+    else
+        leftSide = expression(table, next_call);
+    exp_ret rightSide = expressionPrime(table, op, leftSide.result);
+    exp_ret combine;
     combine.code = catVectors(leftSide.code, rightSide.code);
-    combine.result = rightSide.result;
+    if(rightSide.emptyParse)
+        combine.result = leftSide.result;
+    else
+        combine.result = rightSide.result;
+    combine.emptyParse = false;
     return combine;
 }
 
 parser::exp_ret parser::expressionPrime(symtable::table_tree* table, grammar_type op, std::string leftResult){
+    std::cout << "EXPRESSION_PRIME: " << op << std::endl;
+    if(LOOK == op){//parse operator
+        advance();//past operator
+        exp_ret rightSide = expression(table, op);
+        //TODO call translator, write atomic expression
+    }
+    else{
+        std::cout << "empty" << std::endl;
+        exp_ret emptyRet;
+        emptyRet.emptyParse = true;
+        return emptyRet;
+    } 
+}
 
+parser::exp_ret parser::valueTerm(symtable::table_tree* table){
+    std::cout << "VALUE:" << lookahead->lexeme << std::endl;
+    exp_ret valRet;
+    valRet.result = lookahead->lexeme;
+    advance();
+    return valRet;
+}

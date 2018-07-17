@@ -35,10 +35,12 @@ std::vector<std::string> assignStat(symtable::table_tree* table);
 typedef struct exp_ret {
     std::vector<std::string> code;
     std::string result;
+    bool emptyParse;
 } exp_ret;
 exp_ret expression(symtable::table_tree* table, grammar_type op);
 exp_ret expressionPrime(symtable::table_tree* table, grammar_type op, std::string leftResult);
 //Parses values of an expression: vars, literals, calls, (expression)
+exp_ret valueTerm(symtable::table_tree* table);
 //Other parser functions:
 void advance();
 void error(std::string message);

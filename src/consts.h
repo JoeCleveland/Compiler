@@ -2,6 +2,7 @@
 #define CONSTS_H
 
 #include <string>
+#include <vector>
 
 extern std::string delimeters[]; 
 #define NUMB_DELIMETERS 19 

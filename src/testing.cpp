@@ -4,7 +4,7 @@
 #include "parser.h"
 
 int main(){
-    std::string program = std::string("fn int, int add (int x, float y)");
+    std::string program = std::string("fn (int) add (int x, int y) { int z = x | y & a; }");
     std::vector<token> tokens = lexAnalysis(program);
     parser::tokens = &tokens;
     parser::lookahead = &tokens.at(0);
