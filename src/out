@@ -1,5 +1,14 @@
-/tmp/cc9Mz8qc.o: In function `parser::statement[abi:cxx11](symtable::table_tree*)':
-parser.cpp:(.text+0xede): undefined reference to `parser::assignStat[abi:cxx11](symtable::table_tree*)'
-/tmp/cc9Mz8qc.o: In function `parser::decStatPrime[abi:cxx11](symtable::table_tree*)':
-parser.cpp:(.text+0x103f): undefined reference to `parser::expression[abi:cxx11](symtable::table_tree*, int)'
-collect2: error: ld returned 1 exit status
+parser.cpp:131:1: warning: control may reach end of non-void function [-Wreturn-type]
+}
+^
+parser.cpp:182:1: warning: control may reach end of non-void function [-Wreturn-type]
+}
+^
+2 warnings generated.
+Undefined symbols for architecture x86_64:
+  "parser::assignStat(symtable::table_tree*)", referenced from:
+      parser::statement(symtable::table_tree*) in parser-0289db.o
+  "parser::expressionPrime(symtable::table_tree*, int, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >)", referenced from:
+      parser::expression(symtable::table_tree*, int) in parser-0289db.o
+ld: symbol(s) not found for architecture x86_64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)

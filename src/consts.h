@@ -70,4 +70,10 @@ typedef struct var_dec{
 #define INT 31
 #define FLOAT 32
 
+template <typename T>
+std::vector<T> catVectors(std::vector<T> v1, std::vector<T> v2){
+    v1.insert(v1.end(), v2.begin(), v2.end());
+    return v1;
+}
+
 #endif

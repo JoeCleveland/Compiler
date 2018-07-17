@@ -175,12 +175,28 @@ std::vector<std::string> parser::decStatPrime(symtable::table_tree* table){
     }
     else if(LOOK == EQ){
         advance();
-        std::vector<std::string> code = expression(table, OR);
+        std::vector<std::string> code = expression(table, OR).code;
         //TODO call translator, set var to result of expression
         return code;
     }
 }
  
-std::vector<std::string> expression(symtable::table_tree* table, grammar_type op){
-
+parser::exp_ret parser::expression(symtable::table_tree* table, grammar_type op){
+    grammar_type next_call;
+    switch(op){
+        case OR:   next_call = AND; break;
+        case AND:  next_call = EQEQ; break;
+        case EQEQ: next_call = PLUS; break;//PLUSis both + and -
+        case PLUS:  next_call = MULT; break;//MULT is both * and /
+        case MULT: next_call = ID; break;//ID is for all value terms
+    }
+    parser::exp_ret leftSide = expression(table, next_call);
+    parser::exp_ret rightSide = expressionPrime(table, op, leftSide.result);
+    parser::exp_ret combine;
+    combine.code = catVectors(leftSide.code, rightSide.code);
+    combine.result = rightSide.result;
+    return combine;
 }
+
+parser::exp_ret parser::expressionPrime(symtable::table_tree* table, grammar_type op, std::string leftResult){
+
