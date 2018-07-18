@@ -77,4 +77,6 @@ std::vector<T> catVectors(std::vector<T> v1, std::vector<T> v2){
     return v1;
 }
 
+#define opToString(op) delimeters[op - DELIM_START];
+
 #endif

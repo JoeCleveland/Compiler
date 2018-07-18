@@ -31,11 +31,14 @@ std::vector<std::string> statement(symtable::table_tree* table);
 std::vector<std::string> decStat(symtable::table_tree* table);
 std::vector<std::string> decStatPrime(symtable::table_tree* table);
 std::vector<std::string> assignStat(symtable::table_tree* table);
-//parses expressions and terms of operators of independant precedence |&==
+//parses expressions of all math/logical operators:
 typedef struct exp_ret {
     std::vector<std::string> code;
     std::string result;
     bool emptyParse;
+    exp_ret(){}
+    exp_ret(std::vector<std::string> c, std::string r, bool e)
+        :code(c), result(r), emptyParse(e) {}
 } exp_ret;
 exp_ret expression(symtable::table_tree* table, grammar_type op);
 exp_ret expressionPrime(symtable::table_tree* table, grammar_type op, std::string leftResult);

@@ -1,5 +1,6 @@
 #include "symtable.h"
 #include "consts.h"
+#include <iostream>
 #include <stdexcept>
 
 using namespace symtable;
@@ -24,6 +25,14 @@ data_type table_tree::getType(std::string lexeme){
         if(!table[i].id.compare(lexeme))
             return table[i].type;
     throw std::invalid_argument("Lexeme not found in scope");
+}
+
+void table_tree::printTree(){
+    std::cout << "----" << std::endl;
+    for(var_dec v : table)
+        std::cout << v.id << std::endl;
+    for(table_tree* t : children)
+        t->printTree();
 }
 
 /** global table **/

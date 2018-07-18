@@ -14,6 +14,7 @@ namespace symtable {
         void addEntry(var_dec d);
         void addChild(table_tree* t);
         data_type getType(std::string lexeme);
+        void printTree();
     private:
         table_tree* parent;
         std::vector<table_tree*> children;

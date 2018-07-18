@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "translator.h"
 #include <iostream>
 
 #define LOOK lookahead->type 
@@ -54,6 +55,7 @@ void parser::funcDef(){
     //Create table tree
     symtable::table_tree fnTable(fnParamList);
     statList(&fnTable);
+    fnTable.printTree();
 }
 
 std::vector<data_type> parser::retList(){
@@ -190,6 +192,10 @@ std::vector<std::string> parser::decStatPrime(symtable::table_tree* table){
             error("Semicolon expected");
         return code;
     }
+    else{
+        error("Semicolon or assignment expected");
+        return std::vector<std::string>();
+    }
 }
  
 std::vector<std::string> parser::assignStat(symtable::table_tree* table){
@@ -203,7 +209,9 @@ parser::exp_ret parser::expression(symtable::table_tree* table, grammar_type op)
         case OR:   next_call = AND; break;
         case AND:  next_call = EQEQ; break;
         case EQEQ: next_call = PLUS; break;//PLUSis both + and -
+        case SUB:
         case PLUS:  next_call = MULT; break;//MULT is both * and /
+        case DIV:
         case MULT: next_call = ID; break;//ID is for all value terms
     }
     exp_ret leftSide;
@@ -227,7 +235,10 @@ parser::exp_ret parser::expressionPrime(symtable::table_tree* table, grammar_typ
     if(LOOK == op){//parse operator
         advance();//past operator
         exp_ret rightSide = expression(table, op);
-        //TODO call translator, write atomic expression
+        //call translator, write atomic expression, and make valid return
+        exp_ret thisLine = translator::expressionLine(leftResult, op, rightSide.result);
+        std::cout << thisLine.code[0] << std::endl;
+        return exp_ret(catVectors(rightSide.code, thisLine.code), thisLine.result, false); 
     }
     else{
         std::cout << "empty" << std::endl;
