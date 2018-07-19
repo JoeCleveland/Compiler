@@ -12,8 +12,9 @@ table_tree::table_tree(table_tree* parent){
 
 table_tree::table_tree(std::vector<var_dec> t):table(t){}
 
-void table_tree::addEntry(var_dec d){
+var_dec table_tree::addEntry(var_dec d){
     table.push_back(d);
+    return d;
 }
 
 void table_tree::addChild(table_tree* t){

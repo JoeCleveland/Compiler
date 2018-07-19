@@ -29,7 +29,7 @@ std::vector<std::string> statList(symtable::table_tree* table);
 std::vector<std::string> statListPrime(symtable::table_tree* table);
 std::vector<std::string> statement(symtable::table_tree* table);
 std::vector<std::string> decStat(symtable::table_tree* table);
-std::vector<std::string> decStatPrime(symtable::table_tree* table);
+std::vector<std::string> decStatPrime(symtable::table_tree* table, std::string dest);
 std::vector<std::string> assignStat(symtable::table_tree* table);
 //parses expressions of all math/logical operators:
 typedef struct exp_ret {

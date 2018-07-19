@@ -54,8 +54,10 @@ void parser::funcDef(){
     symbolTable.addEntry(thisFunc);
     //Create table tree
     symtable::table_tree fnTable(fnParamList);
-    statList(&fnTable);
+    std::vector<std::string> code = statList(&fnTable);
     fnTable.printTree();
+    for(std::string s : code)
+       std::cout << s << std::endl; 
 }
 
 std::vector<data_type> parser::retList(){
@@ -172,11 +174,11 @@ std::vector<std::string> parser::statement(symtable::table_tree* table){
 
 std::vector<std::string> parser::decStat(symtable::table_tree* table){
     std::cout << "DEC_STAT" << std::endl;
-    table->addEntry(varDec());
-    return decStatPrime(table);
+    std::string dest = table->addEntry(varDec()).id;
+    return decStatPrime(table, dest);
 }
 
-std::vector<std::string> parser::decStatPrime(symtable::table_tree* table){
+std::vector<std::string> parser::decStatPrime(symtable::table_tree* table, std::string dest){
     std::cout << "DEC_STAT_PRIME" << std::endl;
     if(LOOK == SEMI){
         advance();
@@ -184,8 +186,10 @@ std::vector<std::string> parser::decStatPrime(symtable::table_tree* table){
     }
     else if(LOOK == EQ){
         advance();//=
-        std::vector<std::string> code = expression(table, OR).code;
-        //TODO call translator, set var to result of expression
+        exp_ret exp = expression(table, OR);
+        //call translator, set var to result of expression
+        std::string asgnLine = translator::assignLine(dest, exp.result);
+        std::vector<std::string> code = catVectors(exp.code, {asgnLine});
         if(LOOK == SEMI)
             advance();//;
         else
@@ -203,7 +207,7 @@ std::vector<std::string> parser::assignStat(symtable::table_tree* table){
 }
 
 parser::exp_ret parser::expression(symtable::table_tree* table, grammar_type op){
-    std::cout << "EXPRESSION: " << op << std::endl;
+    std::cout << "EXPRESSION: " << opToString(op) << std::endl;
     grammar_type next_call;
     switch(op){
         case OR:   next_call = AND; break;
@@ -231,7 +235,7 @@ parser::exp_ret parser::expression(symtable::table_tree* table, grammar_type op)
 }
 
 parser::exp_ret parser::expressionPrime(symtable::table_tree* table, grammar_type op, std::string leftResult){
-    std::cout << "EXPRESSION_PRIME: " << op << std::endl;
+    std::cout << "EXPRESSION_PRIME: " << opToString(op) << std::endl;
     if(LOOK == op){//parse operator
         advance();//past operator
         exp_ret rightSide = expression(table, op);

@@ -11,3 +11,7 @@ parser::exp_ret translator::expressionLine(std::string in1, grammar_type op, std
     std::string code = dest + " = " + in1 + " " + opToString(op) + " " + in2;
     return parser::exp_ret({code}, dest, false);
 }
+
+std::string translator::assignLine(std::string dest, std::string src){
+    return dest + " = " + src;
+}

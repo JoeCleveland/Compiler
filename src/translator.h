@@ -10,5 +10,6 @@ namespace translator {
     extern int tempVal;
     std::string getTempLabel();
     parser::exp_ret expressionLine(std::string in1, grammar_type op, std::string in2);
+    std::string assignLine(std::string dest, std::string src);
 }
 #endif
