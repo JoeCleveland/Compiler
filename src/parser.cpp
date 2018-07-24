@@ -5,8 +5,8 @@
 #define LOOK lookahead->type 
 
 token* parser::lookahead;
-std::vector<token>* parser::tokens;
 symtable::global_table parser::symbolTable;
+
 void parser::advance(){
     lookahead++;
 }
@@ -54,10 +54,14 @@ void parser::funcDef(){
     symbolTable.addEntry(thisFunc);
     //Create table tree
     symtable::table_tree fnTable(fnParamList);
-    std::vector<std::string> code = statList(&fnTable);
-    fnTable.printTree();
-    for(std::string s : code)
-       std::cout << s << std::endl; 
+    //parse statements
+    std::vector<translator::instruction> code = statList(&fnTable);
+    //alloc:
+    code.insert(code.begin(), translator::instruction(translator::inst_type::alloc, {std::to_string(fnTable.treeMemorySize())}));
+    //function label:
+    code.insert(code.begin(), translator::instruction(translator::inst_type::label, {fnId}));
+    code.insert(code.end(), translator::instruction(translator::inst_type::ret, {}));
+    translator::intermediateCode = catVectors(translator::intermediateCode, code);
 }
 
 std::vector<data_type> parser::retList(){
@@ -135,36 +139,36 @@ data_type parser::typeName(){
     }
 }
 
-std::vector<std::string> parser::statList(symtable::table_tree* table){
+std::vector<translator::instruction> parser::statList(symtable::table_tree* table){
     std::cout << "STAT_LIST" << std::endl;
-    std::vector<std::string> code;
+    std::vector<translator::instruction> code;
     if(LOOK == O_BRACKET){
         advance(); //past {
         code = statement(table); 
-        std::vector<std::string> listCode = statListPrime(table);
+        std::vector<translator::instruction> listCode = statListPrime(table);
         code.insert(code.end(), listCode.begin(), listCode.end());//concat vectors
     }
    return code;
 } 
 
-std::vector<std::string> parser::statListPrime(symtable::table_tree* table){
+std::vector<translator::instruction> parser::statListPrime(symtable::table_tree* table){
     std::cout << "STAT_LIST_PRIME" << std::endl;
-    std::vector<std::string> code;
+    std::vector<translator::instruction> code;
     if(LOOK == C_BRACKET)
         advance();
     else{
         code = statement(table); 
-        std::vector<std::string> listCode = statListPrime(table);
+        std::vector<translator::instruction> listCode = statListPrime(table);
         code.insert(code.end(), listCode.begin(), listCode.end());//concat vectors
     }
     return code;
 }
 
 
-std::vector<std::string> parser::statement(symtable::table_tree* table){
+std::vector<translator::instruction> parser::statement(symtable::table_tree* table){
     std::cout << "STATMENT" << std::endl;
     std::cout << lookahead->lexeme << std::endl;
-    std::vector<std::string> code;
+    std::vector<translator::instruction> code;
     if(isTypeName()) //if isTypeName then parse a declaration
         code = decStat(table);
     else if(LOOK == ID) 
@@ -172,24 +176,24 @@ std::vector<std::string> parser::statement(symtable::table_tree* table){
     return code;
 }
 
-std::vector<std::string> parser::decStat(symtable::table_tree* table){
+std::vector<translator::instruction> parser::decStat(symtable::table_tree* table){
     std::cout << "DEC_STAT" << std::endl;
     std::string dest = table->addEntry(varDec()).id;
     return decStatPrime(table, dest);
 }
 
-std::vector<std::string> parser::decStatPrime(symtable::table_tree* table, std::string dest){
+std::vector<translator::instruction> parser::decStatPrime(symtable::table_tree* table, std::string dest){
     std::cout << "DEC_STAT_PRIME" << std::endl;
     if(LOOK == SEMI){
         advance();
-        return std::vector<std::string>();
+        return std::vector<translator::instruction>();
     }
     else if(LOOK == EQ){
         advance();//=
         exp_ret exp = expression(table, OR);
         //call translator, set var to result of expression
-        std::string asgnLine = translator::assignLine(dest, exp.result);
-        std::vector<std::string> code = catVectors(exp.code, {asgnLine});
+        translator::instruction asgnLine = translator::assignLine(dest, exp.result);
+        std::vector<translator::instruction> code = catVectors(exp.code, {asgnLine});
         if(LOOK == SEMI)
             advance();//;
         else
@@ -198,11 +202,11 @@ std::vector<std::string> parser::decStatPrime(symtable::table_tree* table, std::
     }
     else{
         error("Semicolon or assignment expected");
-        return std::vector<std::string>();
+        return std::vector<translator::instruction>();
     }
 }
  
-std::vector<std::string> parser::assignStat(symtable::table_tree* table){
+std::vector<translator::instruction> parser::assignStat(symtable::table_tree* table){
     //TODO all of this
 }
 
@@ -240,9 +244,8 @@ parser::exp_ret parser::expressionPrime(symtable::table_tree* table, grammar_typ
         advance();//past operator
         exp_ret rightSide = expression(table, op);
         //call translator, write atomic expression, and make valid return
-        exp_ret thisLine = translator::expressionLine(leftResult, op, rightSide.result);
-        std::cout << thisLine.code[0] << std::endl;
-        return exp_ret(catVectors(rightSide.code, thisLine.code), thisLine.result, false); 
+        translator::instruction thisLine = translator::expressionLine(leftResult, op, rightSide.result);
+        return exp_ret(catVectors(rightSide.code, {thisLine}), thisLine.args[0], false); 
     }
     else{
         std::cout << "empty" << std::endl;

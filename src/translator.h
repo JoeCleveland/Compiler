@@ -2,21 +2,23 @@
 #define TRANSLATOR_H
 
 #include "consts.h"
-#include "parser.h"
 #include <vector>
 #include <string>
 
 namespace translator {
-    enum inst_type { assign };
+    enum inst_type { assign, expression, alloc, label, call, jmp, jg, jge, jl, jle, je, jne, ret};
     typedef struct instruction {
-        std::string dest;
-        std::string op1;
-        std::string op2;
         inst_type type;
-    } inst_type;
+        std::vector<std::string> args;
+        instruction () {}
+        instruction (inst_type t, std::vector<std::string> a) : type(t), args(a) {}
+    } instruction;
     extern int tempVal;
+    extern std::vector<instruction> intermediateCode;
     std::string getTempLabel();
-    parser::exp_ret expressionLine(std::string in1, grammar_type op, std::string in2);
-    std::string assignLine(std::string dest, std::string src);
+    instruction expressionLine(std::string in1, grammar_type op, std::string in2);
+    instruction assignLine(std::string dest, std::string src);
+    
+    void printInstruction(instruction i);
 }
 #endif

@@ -4,12 +4,12 @@
 #include "consts.h"
 #include "lexical.h"
 #include "symtable.h"
+#include "translator.h"
 #include <vector>
 #include <memory>
 
 namespace parser{
 extern token* lookahead;
-extern std::vector<token>* tokens;
 extern symtable::global_table symbolTable;
 
 void defList();
@@ -25,19 +25,19 @@ var_dec varDec();
 //returns type name, or reports error
 data_type typeName();
 //Parses statment list and returns code
-std::vector<std::string> statList(symtable::table_tree* table);
-std::vector<std::string> statListPrime(symtable::table_tree* table);
-std::vector<std::string> statement(symtable::table_tree* table);
-std::vector<std::string> decStat(symtable::table_tree* table);
-std::vector<std::string> decStatPrime(symtable::table_tree* table, std::string dest);
-std::vector<std::string> assignStat(symtable::table_tree* table);
+std::vector<translator::instruction> statList(symtable::table_tree* table);
+std::vector<translator::instruction> statListPrime(symtable::table_tree* table);
+std::vector<translator::instruction> statement(symtable::table_tree* table);
+std::vector<translator::instruction> decStat(symtable::table_tree* table);
+std::vector<translator::instruction> decStatPrime(symtable::table_tree* table, std::string dest);
+std::vector<translator::instruction> assignStat(symtable::table_tree* table);
 //parses expressions of all math/logical operators:
 typedef struct exp_ret {
-    std::vector<std::string> code;
+    std::vector<translator::instruction> code;
     std::string result;
     bool emptyParse;
     exp_ret(){}
-    exp_ret(std::vector<std::string> c, std::string r, bool e)
+    exp_ret(std::vector<translator::instruction> c, std::string r, bool e)
         :code(c), result(r), emptyParse(e) {}
 } exp_ret;
 exp_ret expression(symtable::table_tree* table, grammar_type op);

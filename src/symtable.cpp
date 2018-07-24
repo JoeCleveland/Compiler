@@ -36,6 +36,15 @@ void table_tree::printTree(){
         t->printTree();
 }
 
+int table_tree::treeMemorySize(){
+    int size = 0;
+    for(var_dec v: table)
+        size += 4;
+    for(table_tree* t : children)
+        size += t->treeMemorySize();
+    return size;
+}
+
 /** global table **/
 void global_table::addEntry(global_entry e){
     table.push_back(e);
