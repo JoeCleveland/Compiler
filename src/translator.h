@@ -6,7 +6,7 @@
 #include <string>
 
 namespace translator {
-    enum inst_type { assign, expression, alloc, label, call, jmp, jg, jge, jl, jle, je, jne, ret};
+    enum inst_type { assign, expression, function, label, call, jmp, jg, jge, jl, jle, je, jne, ret};
     typedef struct instruction {
         inst_type type;
         std::vector<std::string> args;

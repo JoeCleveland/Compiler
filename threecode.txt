@@ -10,4 +10,7 @@ label end
 return
 
 
-
+label add
+alloc int a int b int x
+t0 = y * a
+print t0

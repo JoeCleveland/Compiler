@@ -56,8 +56,8 @@ void parser::funcDef(){
     symtable::table_tree fnTable(fnParamList);
     //parse statements
     std::vector<translator::instruction> code = statList(&fnTable);
-    //alloc:
-    code.insert(code.begin(), translator::instruction(translator::inst_type::alloc, {std::to_string(fnTable.treeMemorySize())}));
+    //function:
+    code.insert(code.begin(), translator::instruction(translator::inst_type::function, {std::to_string(fnTable.treeMemorySize())}));
     //function label:
     code.insert(code.begin(), translator::instruction(translator::inst_type::label, {fnId}));
     code.insert(code.end(), translator::instruction(translator::inst_type::ret, {}));
