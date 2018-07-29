@@ -57,10 +57,10 @@ void parser::funcDef(){
     //parse statements
     std::vector<translator::instruction> code = statList(&fnTable);
     //function:
-    code.insert(code.begin(), translator::instruction(translator::inst_type::function, {std::to_string(fnTable.treeMemorySize())}));
+    code.insert(code.begin(), translator::functionLine(&fnTable));
     //function label:
-    code.insert(code.begin(), translator::instruction(translator::inst_type::label, {fnId}));
-    code.insert(code.end(), translator::instruction(translator::inst_type::ret, {}));
+    code.insert(code.begin(), translator::instruction(translator::label, {fnId}));
+    code.insert(code.end(), translator::instruction(translator::ret, {}));
     translator::intermediateCode = catVectors(translator::intermediateCode, code);
 }
 

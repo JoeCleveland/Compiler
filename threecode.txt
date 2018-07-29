@@ -1,16 +1,2 @@
+function add 4 a 4 b 4 c 
 
-label myFunc
-
-expression t1 a * b
-assign t2 (b)
-call max a b c ^t3 ^t4
-jg t3 t2 end
-call print t3
-label end
-return
-
-
-label add
-alloc int a int b int x
-t0 = y * a
-print t0

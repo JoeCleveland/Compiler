@@ -36,15 +36,14 @@ void table_tree::printTree(){
         t->printTree();
 }
 
-int table_tree::treeMemorySize(){
-    int size = 0;
-    for(var_dec v: table)
-        size += 4;
+std::vector<var_dec> table_tree::getAllEntries(){
+    std::vector<var_dec> output;
+    for(var_dec vd : table)
+        output.push_back(vd);
     for(table_tree* t : children)
-        size += t->treeMemorySize();
-    return size;
+        output = catVectors(output, t->getAllEntries());
+    return output;
 }
-
 /** global table **/
 void global_table::addEntry(global_entry e){
     table.push_back(e);

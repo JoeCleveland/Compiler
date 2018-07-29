@@ -2,6 +2,7 @@
 #define TRANSLATOR_H
 
 #include "consts.h"
+#include "symtable.h"
 #include <vector>
 #include <string>
 
@@ -18,6 +19,7 @@ namespace translator {
     std::string getTempLabel();
     instruction expressionLine(std::string in1, grammar_type op, std::string in2);
     instruction assignLine(std::string dest, std::string src);
+    instruction functionLine(symtable::table_tree* tree);
     
     void printInstruction(instruction i);
 }
