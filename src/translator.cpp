@@ -5,7 +5,7 @@ int translator::tempVal = 0;
 std::vector<translator::instruction> translator::intermediateCode;
 
 std::string translator::getTempLabel(){
-    return "t" + std::to_string(translator::tempVal++);
+    return "%" + std::to_string(translator::tempVal++);
 }
 
 translator::instruction translator::expressionLine(std::string in1, grammar_type op, std::string in2){
