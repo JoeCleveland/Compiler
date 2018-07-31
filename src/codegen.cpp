@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iostream>
 #include "codegen.h"
 
 std::vector<std::string> codegen::buffer;
@@ -8,7 +9,7 @@ std::map<std::string, int> codegen::offsets;
 std::map<std::string, std::string> codegen::tempToReg;
 
 std::string fmtReg(std::string reg, int bytes) {
-    if(reg.at(1) == 'x' || reg.at(1) == 'i'){//If 32-bit style register
+    if(reg.back() == 'x' || reg.back() == 'i'){//If 32-bit style register
         switch(bytes){
             case 4:
                 return "e" + reg;
@@ -27,14 +28,14 @@ void codegen::writeLine(translator::instruction inst){
             std::string src;
             char srcType = inst.args[1].at(0);
             if(srcType == '%')
-                src = fmtReg(tempToReg[inst.args[1]], 4); 
+                src = "%" + fmtReg(tempToReg[inst.args[1]], 4); 
             else if(srcType == '$')
                 src = inst.args[1];
             else{
                 std::string reg = availableRegisters.back();
                 std::string off = std::to_string(offsets[inst.args[1]]); 
                 buffer.push_back("movl " + off + "(%rbp)" + ", " + fmtReg(reg, 4));
-                src = fmtReg(tempToReg[inst.args[1]], 4); 
+                src = "%" + fmtReg(tempToReg[inst.args[1]], 4); 
             }
             buffer.push_back("movl " + src + ", " + dest);
         }break;
@@ -47,7 +48,7 @@ void codegen::writeLine(translator::instruction inst){
             //if first var is a tempval reuse its register for new temp
             if(var1.at(0) == '%'){
                 reg = tempToReg[var1];
-                tempToReg.insert(std::pair<std::string, std::string>(var1, reg));
+                tempToReg.insert(std::pair<std::string, std::string>(inst.args[0], reg));
             } else {
                 //otherwise move variable from stack to new register
                 reg = availableRegisters.back();
@@ -66,6 +67,8 @@ void codegen::writeLine(translator::instruction inst){
                 buffer.push_back("addl " + src + ", %" + fmtReg(reg, 4));
             else if(op == "-")
                 buffer.push_back("subl " + src + ", %" + fmtReg(reg, 4));
+            else if(op == "*")
+                buffer.push_back("imull " + src + ", %" + fmtReg(reg, 4));
 
         }break;
         case translator::function:{// ~~~~~~~~ Function

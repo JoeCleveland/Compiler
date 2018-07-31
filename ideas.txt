@@ -1,11 +1,25 @@
 
-fn main {
-    int x = 5 + 5 * 6 == z;
-    
+type node {
+    node l;
+    node r;
+    int val;
 }
 
-t1 = 5 * 6
-t2 = 5 + t1
-t3 = t2 == z
-x = t3
-    
+met:node init {
+}
+
+fn main {
+    int x = 5;
+    float y = 6.5;
+    node m;
+    m.val = 5;
+    parser.parseString
+    print parser.parserStatus;
+}
+
+module parser {
+    int parserStatus;
+    fn parseString(string input){
+     ...
+    }
+}
