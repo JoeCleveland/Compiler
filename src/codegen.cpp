@@ -4,7 +4,7 @@
 
 std::vector<std::string> codegen::buffer;
 std::string codegen::argOrder[] = {"di", "si", "dx", "10", "8", "9"};
-std::vector<std::string> codegen::availableRegisters = {"ax", "cx", "dx", "si", "di", "8", "9", "10", "11", "13", "14", "15"};
+std::vector<std::string> codegen::availableRegisters = {"cx", "dx", "si", "di", "8", "9", "10", "11", "13", "14", "15"};
 std::map<std::string, int> codegen::offsets;
 std::map<std::string, std::string> codegen::tempToReg;
 
@@ -69,6 +69,11 @@ void codegen::writeLine(translator::instruction inst){
                 buffer.push_back("subl " + src + ", %" + fmtReg(reg, 4));
             else if(op == "*")
                 buffer.push_back("imull " + src + ", %" + fmtReg(reg, 4));
+            else if(op == "/"){
+                buffer.push_back("movl " + src + ", %" + fmtReg("ax", 4));
+                buffer.push_back("cltd");
+                buffer.push_back("idivl %" + fmtReg(reg, 4));
+            }
 
         }break;
         case translator::function:{// ~~~~~~~~ Function

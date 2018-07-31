@@ -217,9 +217,9 @@ parser::exp_ret parser::expression(symtable::table_tree* table, grammar_type op)
         case OR:   next_call = AND; break;
         case AND:  next_call = EQEQ; break;
         case EQEQ: next_call = PLUS; break;//PLUSis both + and -
-        case SUB:
-        case PLUS:  next_call = MULT; break;//MULT is both * and /
-        case DIV:
+        case SUB: 
+        case PLUS: next_call = MULT; break;//MULT is both * and /
+        case DIV:  
         case MULT: next_call = ID; break;//ID is for all value terms
     }
     exp_ret leftSide;
@@ -240,11 +240,12 @@ parser::exp_ret parser::expression(symtable::table_tree* table, grammar_type op)
 
 parser::exp_ret parser::expressionPrime(symtable::table_tree* table, grammar_type op, std::string leftResult){
     std::cout << "EXPRESSION_PRIME: " << opToString(op) << std::endl;
-    if(LOOK == op){//parse operator
+    if(LOOK == op || (op == MULT && LOOK == DIV) || (op == PLUS && LOOK == SUB)){//parse operator
+        grammar_type instOp = LOOK;
         advance();//past operator
         exp_ret rightSide = expression(table, op);
         //call translator, write atomic expression, and make valid return
-        translator::instruction thisLine = translator::expressionLine(leftResult, op, rightSide.result);
+        translator::instruction thisLine = translator::expressionLine(leftResult, instOp, rightSide.result);
         return exp_ret(catVectors(rightSide.code, {thisLine}), thisLine.args[0], false); 
     }
     else{

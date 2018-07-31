@@ -6,7 +6,7 @@
 
 int main(){
     std::string program = std::string("fn (int, int) sum (int x) {" 
-            "int a = x * x + x + x;}");
+            "int a = f / e * d;}");
     std::vector<token> tokens = lexAnalysis(program);
     parser::lookahead = &tokens.at(0);
     parser::defList();
