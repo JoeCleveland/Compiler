@@ -41,7 +41,6 @@ typedef struct exp_ret {
         :code(c), result(r), emptyParse(e) {}
 } exp_ret;
 exp_ret expression(symtable::table_tree* table, grammar_type op);
-exp_ret expressionPrime(symtable::table_tree* table, grammar_type op, std::string leftResult);
 //Parses values of an expression: vars, literals, calls, (expression)
 exp_ret valueTerm(symtable::table_tree* table);
 //Other parser functions:

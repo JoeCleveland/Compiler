@@ -211,7 +211,6 @@ std::vector<translator::instruction> parser::assignStat(symtable::table_tree* ta
 }
 
 parser::exp_ret parser::expression(symtable::table_tree* table, grammar_type op){
-    std::cout << "EXPRESSION: " << opToString(op) << std::endl;
     grammar_type next_call;
     switch(op){
         case OR:   next_call = AND; break;
@@ -227,33 +226,18 @@ parser::exp_ret parser::expression(symtable::table_tree* table, grammar_type op)
         leftSide = valueTerm(table);
     else
         leftSide = expression(table, next_call);
-    exp_ret rightSide = expressionPrime(table, op, leftSide.result);
-    exp_ret combine;
-    combine.code = catVectors(leftSide.code, rightSide.code);
-    if(rightSide.emptyParse)
-        combine.result = leftSide.result;
-    else
-        combine.result = rightSide.result;
-    combine.emptyParse = false;
-    return combine;
-}
 
-parser::exp_ret parser::expressionPrime(symtable::table_tree* table, grammar_type op, std::string leftResult){
-    std::cout << "EXPRESSION_PRIME: " << opToString(op) << std::endl;
-    if(LOOK == op || (op == MULT && LOOK == DIV) || (op == PLUS && LOOK == SUB)){//parse operator
+    while(LOOK == op || (op == MULT && LOOK == DIV) || (op == PLUS && LOOK == SUB)){
         grammar_type instOp = LOOK;
         advance();//past operator
-        exp_ret rightSide = expression(table, op);
-        //call translator, write atomic expression, and make valid return
-        translator::instruction thisLine = translator::expressionLine(leftResult, instOp, rightSide.result);
-        return exp_ret(catVectors(rightSide.code, {thisLine}), thisLine.args[0], false); 
+        exp_ret rightSide = expression(table, next_call);
+        translator::instruction thisLine = translator::expressionLine(leftSide.result, 
+                instOp, rightSide.result);
+        rightSide.code.push_back(thisLine);
+        leftSide.code = catVectors(leftSide.code, rightSide.code);
+        leftSide.result = thisLine.args[0];//Result register
     }
-    else{
-        std::cout << "empty" << std::endl;
-        exp_ret emptyRet;
-        emptyRet.emptyParse = true;
-        return emptyRet;
-    } 
+    return leftSide;
 }
 
 parser::exp_ret parser::valueTerm(symtable::table_tree* table){
