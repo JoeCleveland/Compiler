@@ -26,11 +26,14 @@ translator::instruction translator::assignLine(std::string dest, std::string src
     return line;
 }
 
-translator::instruction translator::functionLine(symtable::table_tree* tree){
-    std::vector<var_dec> allVars = tree->getAllEntries();
+translator::instruction translator::variableLine(symtable::table_tree* tree, bool isParam){
+    std::vector<var_dec> vars = tree->getEntries(isParam);
     instruction line;
-    line.type = translator::function;
-    for(var_dec vd : allVars){
+    if(isParam)
+        line.type = translator::params;
+    else
+        line.type = translator::vars;
+    for(var_dec vd : vars){
         line.args.push_back("4");//var size
         line.args.push_back(vd.id);
     }

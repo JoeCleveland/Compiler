@@ -14,10 +14,11 @@ std::vector<std::string> tokenize(std::string input){
     
     int tokStart = 0;
     for(int i = 0; i < input.length(); i++){
-         if(input.at(i) == ' ' && (i - tokStart) > 0){
+         if((input.at(i) == ' ' || input.at(i) == '\n' || input.at(i) == '\t')
+                 && (i - tokStart) > 0){
              output.push_back(input.substr(tokStart, i - tokStart));
              tokStart = i + 1;
-         } else if(input.at(i) == ' '){
+         } else if(input.at(i) == ' ' || input.at(i) == '\n' || input.at(i) == '\t'){
              tokStart++;
          }
          else{

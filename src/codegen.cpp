@@ -6,6 +6,7 @@ std::vector<std::string> codegen::buffer;
 std::string codegen::argOrder[] = {"di", "si", "dx", "10", "8", "9"};
 std::vector<std::string> codegen::availableRegisters = {"cx", "dx", "si", "di", "8", "9", "10", "11", "13", "14", "15"};
 std::map<std::string, int> codegen::offsets;
+int codegen::lastOffset;
 std::map<std::string, std::string> codegen::tempToReg;
 
 std::string fmtReg(std::string reg, int bytes) {
@@ -55,7 +56,12 @@ void codegen::writeLine(translator::instruction inst){
                 availableRegisters.pop_back();
                 tempToReg.insert(std::pair<std::string, std::string>(inst.args[0], reg));
                 std::string stackLoc = std::to_string(offsets[var1]) + "(%rbp)";
-                buffer.push_back("movl " + stackLoc + ", %" + fmtReg(reg, 4));
+                std::string printReg;
+                if(op == "/")
+                    printReg = "ax";
+                else
+                    printReg = reg;
+                buffer.push_back("movl " + stackLoc + ", %" + fmtReg(printReg, 4));
             }
             //set src to location or register:
             if(var2.at(0) == '%')
@@ -70,13 +76,13 @@ void codegen::writeLine(translator::instruction inst){
             else if(op == "*")
                 buffer.push_back("imull " + src + ", %" + fmtReg(reg, 4));
             else if(op == "/"){
-                buffer.push_back("movl " + src + ", %" + fmtReg("ax", 4));
                 buffer.push_back("cltd");
-                buffer.push_back("idivl %" + fmtReg(reg, 4));
+                buffer.push_back("idivl " + src);
+                buffer.push_back("movl %" + fmtReg("ax", 4) + ", %" + fmtReg(reg, 4));
             }
 
         }break;
-        case translator::function:{// ~~~~~~~~ Function
+        case translator::params:{// ~~~~~~~~ Function params
             buffer.push_back("push %rbp");
             buffer.push_back("movq %rsp, %rbp");
             offsets = std::map<std::string, int>();
@@ -85,6 +91,15 @@ void codegen::writeLine(translator::instruction inst){
                 std::string id = inst.args[arg + 1];
                 offsets.insert(std::pair<std::string, int>(id, off));
                 buffer.push_back("movl %" + fmtReg(argOrder[arg/2], 4) + ", " + std::to_string(off) + "(%rbp)");
+                off -= stoi(inst.args[arg]); 
+            }
+            lastOffset = off;
+        }break;
+        case translator::vars:{
+            int off = lastOffset;
+            for(int arg = 0; arg < inst.args.size(); arg += 2){
+                std::string id = inst.args[arg + 1];
+                offsets.insert(std::pair<std::string, int>(id, off));
                 off -= stoi(inst.args[arg]); 
             }
         }break;

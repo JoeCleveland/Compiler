@@ -57,11 +57,13 @@ void parser::funcDef(){
     //parse statements
     std::vector<translator::instruction> code = statList(&fnTable);
     //function:
-    code.insert(code.begin(), translator::functionLine(&fnTable));
+    code.insert(code.begin(), translator::variableLine(&fnTable, false));//vars
+    code.insert(code.begin(), translator::variableLine(&fnTable, true));//params
     //function label:
     code.insert(code.begin(), translator::instruction(translator::label, {fnId}));
     code.insert(code.end(), translator::instruction(translator::ret, {}));
     translator::intermediateCode = catVectors(translator::intermediateCode, code);
+    fnTable.printTree();    
 }
 
 std::vector<data_type> parser::retList(){
@@ -97,6 +99,7 @@ std::vector<var_dec> parser::paramList(){
     if(LOOK == O_PAREN){
         advance();
     	var_dec dec = varDec();
+        dec.isParam = true;
         list = paramListPrime();	
 	    list.insert(list.begin(), dec);
     }
@@ -123,7 +126,7 @@ var_dec parser::varDec(){
     std::string id = lookahead->lexeme;
     std::cout << id << std::endl;
     advance();// past id 
-    return var_dec(typ, id);
+    return var_dec(typ, id, false);
 }
 
 data_type parser::typeName(){
@@ -243,7 +246,10 @@ parser::exp_ret parser::expression(symtable::table_tree* table, grammar_type op)
 parser::exp_ret parser::valueTerm(symtable::table_tree* table){
     std::cout << "VALUE:" << lookahead->lexeme << std::endl;
     exp_ret valRet;
-    valRet.result = lookahead->lexeme;
+    if(LOOK == ID)
+        valRet.result = lookahead->lexeme;
+    else if (LOOK == INT_LIT)
+        valRet.result = "$" + lookahead->lexeme;
     advance();
     return valRet;
 }

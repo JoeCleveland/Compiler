@@ -31,17 +31,18 @@ data_type table_tree::getType(std::string lexeme){
 void table_tree::printTree(){
     std::cout << "----" << std::endl;
     for(var_dec v : table)
-        std::cout << v.id << std::endl;
+        std::cout << v.id << v.isParam << std::endl;
     for(table_tree* t : children)
         t->printTree();
 }
 
-std::vector<var_dec> table_tree::getAllEntries(){
+std::vector<var_dec> table_tree::getEntries(bool param){
     std::vector<var_dec> output;
     for(var_dec vd : table)
-        output.push_back(vd);
+        if(param == vd.isParam)
+            output.push_back(vd);
     for(table_tree* t : children)
-        output = catVectors(output, t->getAllEntries());
+        output = catVectors(output, t->getEntries(param));
     return output;
 }
 /** global table **/

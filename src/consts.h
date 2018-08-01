@@ -25,7 +25,8 @@ typedef struct data_type {
 typedef struct var_dec{
     data_type type;
     std::string id;
-    var_dec(data_type t, std::string i):type(t), id(i) {}
+    bool isParam;
+    var_dec(data_type t, std::string i, bool isP):type(t), id(i), isParam(isP) {}
 } var_dec;
 //non keyword/symbolic types
 #define INVALID -2
