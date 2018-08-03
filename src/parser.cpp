@@ -112,6 +112,7 @@ std::vector<var_dec> parser::paramListPrime(){
     if(LOOK == COMMA){
         advance();
     	var_dec dec = varDec();
+        dec.isParam = true;
         list = paramListPrime();	
         list.insert(list.begin(), dec);
     }
