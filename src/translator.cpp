@@ -39,6 +39,22 @@ translator::instruction translator::variableLine(symtable::table_tree* tree, boo
     }
     return line;
 }
+
+translator::instruction translator::callArgLine(std::string id){
+    instruction line;
+    line.type = translator::callarg;
+    line.args.push_back(id);
+    return line;
+}
+
+translator::instruction translator::callLine(std::string id){
+    instruction line;
+    line.type = translator::call;
+    line.args.push_back(getTempLabel());
+    line.args.push_back(id);
+    return line;
+}
+
 void translator::printInstruction(instruction i){
     std::cout << i.type << " ";
     for(std::string s : i.args)

@@ -51,21 +51,27 @@ void codegen::writeLine(translator::instruction inst){
                 reg = tempToReg[var1];
                 tempToReg.insert(std::pair<std::string, std::string>(inst.args[0], reg));
             } else {
-                //otherwise move variable from stack to new register
+                //otherwise move variable to new register
                 reg = availableRegisters.back();
                 availableRegisters.pop_back();
                 tempToReg.insert(std::pair<std::string, std::string>(inst.args[0], reg));
-                std::string stackLoc = std::to_string(offsets[var1]) + "(%rbp)";
+                std::string firstSrc;
+                if(var1.at(0) == '$')
+                    firstSrc = var1;
+                else
+                    firstSrc = std::to_string(offsets[var1]) + "(%rbp)";
                 std::string printReg;
                 if(op == "/")
                     printReg = "ax";
                 else
                     printReg = reg;
-                buffer.push_back("movl " + stackLoc + ", %" + fmtReg(printReg, 4));
+                buffer.push_back("movl " + firstSrc + ", %" + fmtReg(printReg, 4));
             }
             //set src to location or register:
             if(var2.at(0) == '%')
                 src = "%" + fmtReg(tempToReg[var2], 4);
+            else if(var2.at(0) == '$')
+                src = var2;
             else
                 src = std::to_string(offsets[var2]) + "(%rbp)";
             //generate operation:
@@ -95,7 +101,7 @@ void codegen::writeLine(translator::instruction inst){
             }
             lastOffset = off;
         }break;
-        case translator::vars:{
+        case translator::vars:{// ~~~~~~~~~~~ Function vars
             int off = lastOffset;
             for(int arg = 0; arg < inst.args.size(); arg += 2){
                 std::string id = inst.args[arg + 1];
@@ -107,6 +113,14 @@ void codegen::writeLine(translator::instruction inst){
             buffer.push_back(".globl " + inst.args[0]);
             buffer.push_back(inst.args[0] + ":");
             break;
+        case translator::call:{
+            buffer.push_back("call " + inst.args[1]);
+            tempToReg.insert(std::pair<std::string, std::string>(inst.args[0], "ax"));              
+        }break;
+        case translator::callarg:{
+        }break;
+        case translator::ret:{
+        }break;
     }
 }
 

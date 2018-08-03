@@ -7,7 +7,7 @@
 #include <string>
 
 namespace translator {
-    enum inst_type { assign, expression, params, vars, label, call, jmp, jg, jge, jl, jle, je, jne, ret};
+    enum inst_type { assign, expression, params, vars, label, call, callarg, ret};
     typedef struct instruction {
         inst_type type;
         std::vector<std::string> args;
@@ -20,6 +20,8 @@ namespace translator {
     instruction expressionLine(std::string in1, grammar_type op, std::string in2);
     instruction assignLine(std::string dest, std::string src);
     instruction variableLine(symtable::table_tree* tree, bool param);
+    instruction callArgLine(std::string id);
+    instruction callLine(std::string id);
     
     void printInstruction(instruction i);
 }

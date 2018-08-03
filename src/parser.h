@@ -35,14 +35,17 @@ std::vector<translator::instruction> assignStat(symtable::table_tree* table);
 typedef struct exp_ret {
     std::vector<translator::instruction> code;
     std::string result;
-    bool emptyParse;
     exp_ret(){}
-    exp_ret(std::vector<translator::instruction> c, std::string r, bool e)
-        :code(c), result(r), emptyParse(e) {}
+    exp_ret(std::vector<translator::instruction> c, std::string r)
+        :code(c), result(r) {}
 } exp_ret;
 exp_ret expression(symtable::table_tree* table, grammar_type op);
 //Parses values of an expression: vars, literals, calls, (expression)
 exp_ret valueTerm(symtable::table_tree* table);
+//Parse function calls:
+exp_ret call(symtable::table_tree* table);
+std::vector<translator::instruction> expList(symtable::table_tree* table);
+std::vector<translator::instruction> expListPrime(symtable::table_tree* table);
 //Other parser functions:
 void advance();
 void error(std::string message);

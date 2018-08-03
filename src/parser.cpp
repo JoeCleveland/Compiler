@@ -3,6 +3,7 @@
 #include <iostream>
 
 #define LOOK lookahead->type 
+#define LOOK2 (lookahead + 1)->type
 
 token* parser::lookahead;
 symtable::global_table parser::symbolTable;
@@ -246,10 +247,54 @@ parser::exp_ret parser::expression(symtable::table_tree* table, grammar_type op)
 parser::exp_ret parser::valueTerm(symtable::table_tree* table){
     std::cout << "VALUE:" << lookahead->lexeme << std::endl;
     exp_ret valRet;
-    if(LOOK == ID)
-        valRet.result = lookahead->lexeme;
-    else if (LOOK == INT_LIT)
+    if(LOOK == ID){
+        if(LOOK2 == O_PAREN)
+            valRet = call(table);
+        else{
+            valRet.result = lookahead->lexeme;
+            advance();
+        }
+    }
+    else if (LOOK == INT_LIT){
         valRet.result = "$" + lookahead->lexeme;
-    advance();
+        advance();
+    }
     return valRet;
+}
+
+parser::exp_ret parser::call(symtable::table_tree* tree){
+    std::cout << "CALL\n"; 
+    std::string id = lookahead->lexeme;
+    advance();
+    translator::instruction cl = translator::callLine(id);
+    std::vector<translator::instruction> expCode = expList(tree);
+    return exp_ret(catVectors(expCode, {cl}), cl.args[0]);
+}
+
+std::vector<translator::instruction> parser::expList(symtable::table_tree* table){
+    if(LOOK != O_PAREN)
+        error("Missing parenthesis.");
+    else if(LOOK != C_PAREN){
+        advance();
+        exp_ret thisExp = expression(table, OR);    
+        std::vector<translator::instruction> nextExps = expListPrime(table);
+        thisExp.code.push_back(translator::callArgLine(thisExp.result));
+        return catVectors(thisExp.code, nextExps);
+    }
+    return std::vector<translator::instruction>();//empty list
+}
+
+std::vector<translator::instruction> parser::expListPrime(symtable::table_tree* table){
+    if(LOOK == COMMA){
+        advance();
+        exp_ret thisExp = expression(table, OR);    
+        std::vector<translator::instruction> nextExps = expListPrime(table);
+        thisExp.code.push_back(translator::callArgLine(thisExp.result));
+        return catVectors(thisExp.code, nextExps);
+    }
+    else if(LOOK != C_PAREN)
+        error("Missing parenthesis.");
+    else
+        advance();
+    return std::vector<translator::instruction>();
 }
