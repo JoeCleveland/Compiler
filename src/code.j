@@ -1,4 +1,9 @@
-fn main (int a, int b, int c){
-    int x = a * b + c;
+
+fn sum (int x, int y) {
+    ret x + y;
+}
+
+fn main {
+    ret sum(5, 6);
 }
 

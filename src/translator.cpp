@@ -55,6 +55,10 @@ translator::instruction translator::callLine(std::string id){
     return line;
 }
 
+translator::instruction translator::retLine(std::string value){
+    return instruction(translator::ret, {value});
+}
+
 void translator::printInstruction(instruction i){
     std::cout << i.type << " ";
     for(std::string s : i.args)

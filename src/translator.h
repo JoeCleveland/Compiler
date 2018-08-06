@@ -22,6 +22,7 @@ namespace translator {
     instruction variableLine(symtable::table_tree* tree, bool param);
     instruction callArgLine(std::string id);
     instruction callLine(std::string id);
+    instruction retLine(std::string value);
     
     void printInstruction(instruction i);
 }

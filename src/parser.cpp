@@ -62,7 +62,6 @@ void parser::funcDef(){
     code.insert(code.begin(), translator::variableLine(&fnTable, true));//params
     //function label:
     code.insert(code.begin(), translator::instruction(translator::label, {fnId}));
-    code.insert(code.end(), translator::instruction(translator::ret, {}));
     translator::intermediateCode = catVectors(translator::intermediateCode, code);
     fnTable.printTree();    
 }
@@ -178,6 +177,14 @@ std::vector<translator::instruction> parser::statement(symtable::table_tree* tab
         code = decStat(table);
     else if(LOOK == ID) 
         code = assignStat(table);
+    else if (LOOK == RET){//Whole parse of ret statement
+        advance();//past ret keyword
+        exp_ret expr = expression(table, OR);
+        expr.code.push_back(translator::retLine(expr.result));
+        code = expr.code;
+        if(LOOK == SEMI)
+            advance();
+    }
     return code;
 }
 
