@@ -4,3 +4,4 @@ a.out
 mac.out
 linux.out
 *.s
+*.o
