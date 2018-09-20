@@ -154,6 +154,11 @@ void codegen::writeLine(translator::instruction inst){
             else
                 buffer.push_back("retq");
         }break;
+        case translator::condjump:{
+            codegen::location expResult = getLoc(inst.args[0]); 
+            buffer.push_back("cmpl $1, " + fmtLoc(expResult));            
+            buffer.push_back("jne " + inst.args[1]);
+        }break;
     }
 }
 
@@ -195,8 +200,6 @@ void codegen::writeExpressionLine(translator::instruction inst){
         buffer.push_back("andb $1,\t%al");
         buffer.push_back("movzbl %al,\t" + fmtLoc(loc));
     }
-
-
 }
 
 void codegen::outputToFile(std::string fileName){

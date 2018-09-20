@@ -177,6 +177,8 @@ std::vector<translator::instruction> parser::statement(symtable::table_tree* tab
         code = decStat(table);
     else if(LOOK == ID) 
         code = assignStat(table);
+    else if(LOOK == IF)
+        code = ifStat(table);
     else if (LOOK == RET){//Whole parse of ret statement
         advance();//past ret keyword
         exp_ret expr = expression(table, OR);
@@ -304,5 +306,23 @@ std::vector<translator::instruction> parser::expListPrime(symtable::table_tree* 
         error("Missing parenthesis.");
     else
         advance();
+    return std::vector<translator::instruction>();
+}
+
+std::vector<translator::instruction> parser::ifStat(symtable::table_tree* table){
+    if(LOOK == IF){
+        advance();
+        exp_ret condition = expression(table, OR);
+        std::string jumpLabel = translator::getJumpLabel();
+        condition.code.push_back(translator::condJumpLine(condition.result, jumpLabel));
+        std::vector<translator::instruction> innerInsts = statList(table);
+        innerInsts.push_back(translator::instruction(translator::label, {jumpLabel}));
+        std::vector<translator::instruction> elseCode = elStat(table);
+        std::vector<translator::instruction> retCode = catVectors(condition.code, innerInsts); 
+        return catVectors(retCode, elseCode);
+    }
+}
+
+std::vector<translator::instruction> parser::elStat(symtable::table_tree* table){
     return std::vector<translator::instruction>();
 }

@@ -2,10 +2,15 @@
 #include <iostream>
 
 int translator::tempVal = 0;
+int translator::jumpVal = 0;
 std::vector<translator::instruction> translator::intermediateCode;
 
 std::string translator::getTempLabel(){
     return "%" + std::to_string(translator::tempVal++);
+}
+
+std::string translator::getJumpLabel(){
+    return "_L" + std::to_string(translator::jumpVal++);
 }
 
 translator::instruction translator::expressionLine(std::string in1, grammar_type op, std::string in2){
@@ -59,9 +64,19 @@ translator::instruction translator::retLine(std::string value){
     return instruction(translator::ret, {value});
 }
 
+translator::instruction translator::condJumpLine(std::string result, std::string label){
+    instruction line;
+    line.type = translator::condjump;
+    line.args.push_back(result);
+    line.args.push_back(label);
+    return line;
+} 
+
 void translator::printInstruction(instruction i){
     std::cout << i.type << " ";
     for(std::string s : i.args)
         std::cout << s << " "; 
     std::cout << std::endl;
 }
+
+
