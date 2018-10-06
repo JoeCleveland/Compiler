@@ -19,7 +19,8 @@ int main(int argc, char** argv){
         codegen::writeLine(i);
     }
     codegen::outputToFile("code.s");
-    std::system("as code.s -o code");
-    std::system("ld code -o code");
+    //std::system("as code.s -o code");
+    //std::system("ld code -o code");
+    std::system("gcc code.s -o code");
     return 0;
 }   

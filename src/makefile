@@ -12,3 +12,5 @@ lexical.o: lexical.cpp lexical.h
 	g++ -std=c++11 -I . -c lexical.cpp -g
 codegen.o: codegen.cpp codegen.h
 	g++ -std=c++11 -I . -c codegen.cpp -g
+clean:
+	rm *.o

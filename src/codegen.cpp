@@ -119,7 +119,7 @@ void codegen::writeLine(translator::instruction inst){
             std::string labelName = inst.args[0];
             if(labelName == "main"){
                 mainFunc = true;
-                labelName = "start";
+                labelName = "_main";
             }
             buffer.push_back(".globl " + labelName);
             buffer.push_back(labelName + ":");
