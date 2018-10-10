@@ -20,7 +20,7 @@ fn main {
 
 ### Lexical Analysis
 
-The first stage of compilation is lexical analysis. In this stage code is split into 'lexemes' by delimeters and then assigned a token. A lexeme is a string representing the smallest piece a program can be split into, such as keywords, operators, or identifiers. A token is an integer specifying the type of that lexeme. Delimeters include spaces, tabs, newlines, and the symbols specified in the array ```std::string delimiters[]``` in lexical.cpp. The function lexAnalysis takes in the entire program as a string and returns it as a vector of tokens. Each token stores the original lexeme that created that makes up the token, and an integer type. All of the possible token types are defined in consts.h.
+The first stage of compilation is lexical analysis. In this stage code is split into 'lexemes' by delimeters and then assigned a token. A lexeme is a string representing the smallest piece a program can be split into, such as keywords, operators, or identifiers. A token is an integer specifying the type of that lexeme. Delimeters include spaces, tabs, newlines, and the symbols specified in the array ```std::string delimiters[]``` in lexical.cpp. The function lexAnalysis takes in the entire program as a string and returns it as a vector of tokens. Each token stores the original lexeme that makes up the token, and an integer type. All of the possible token types are defined in consts.h.
 ```
 typedef struct token {
     std::string lexeme;
@@ -41,4 +41,22 @@ Splitting the program into a sequence of tokens makes the process of parsing muc
 ### Parsing
 
 Parsing is the process of sequentially looking through the tokens and building a parse tree based on grammar of the language.
-We specify the grammar in Backus-Naur form, which is a set of relations from non-terminals to terminals and other non-terminals.
+We specify the grammar in Backus-Naur form, which is a set of relations from non-terminals, which are overarching grammatical structures, to more specific structures and terminals (tokens).
+As a simple example, the following is a grammar for parsing simple expressions.
+```
+EXPRESION -> EXPRESSION + TERM | TERM
+TERM      -> TERM * FACTOR | FACTOR
+FACTOR    -> VALUE | ID
+```
+With this grammar, parsing the expression 5 + x * y would produce the following parse tree:
+```
+            EXPRESION
+                |
+     EXPRESSION + TERM  
+     /               \               
+  TERM          TERM * FACTOR         
+   |            /         \
+ FACTOR       FACTOR      ID (y)
+   |             |
+  VALUE (5)      ID (x)
+```
