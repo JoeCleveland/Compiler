@@ -58,5 +58,20 @@ With this grammar, parsing the expression 5 + x * y would produce the following 
    |            /         \
  FACTOR       FACTOR      ID (y)
    |             |
-  VALUE (5)      ID (x)
+ VALUE (5)      ID (x)
+```
+In this example, EXPRESSIONs, TERMs, and FACTORs are non-terminals, and VALUEs, IDs and the symbols (+, \*) are all terminals.
+
+The parser used in this project is a recursive-descent parser. Each non-terminal in the grammar corresponds to a function of the parser. Within each relation of the grammar, the non-terminals on the right side of the relation correspond to calls to the corresponding functions, some of these calls being recursive. A parse tree is not explicitly built as an actual data structure but is built on the stack as a side-effect of the function calls. 
+
+Since we are using a recursive descent parser, a simple grammar such as the one above cannot be used, since it contains left-recursion which would cause the parser to get stuck trying to parse the leftmost non-terminal.
+Here is the actual grammar for parsing expressions in this project, which eliminates left recursion:
+(The curly braces mean that piece of the relation can be repeated indefinitley)
+```
+EXPRESSION  -> AND_TERM { | AND_TERM }
+AND_TERM    -> EQ_TERM { & EQ_TERM }
+EQ_TERM     -> ADDSUB_TERM { == ADSUM_TERM }
+ADDSUB_TERM -> MULDIV_TERM { + or - MULDIV_TERM }
+MULDIV_TERM -> VALUE_TERM { * or / VALUE_TERM }
+VALUE_TERM  -> id | INT_LIT | FLOAT_LIT | CALL
 ```
