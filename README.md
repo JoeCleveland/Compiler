@@ -41,7 +41,7 @@ Splitting the program into a sequence of tokens makes the process of parsing muc
 ### Parsing
 
 Parsing is the process of sequentially looking through the tokens and building a parse tree based on grammar of the language.
-We specify the grammar in Backus-Naur form, which is a set of relations from non-terminals, which are overarching grammatical structures, to more specific structures and terminals (tokens).
+We specify the grammar in Backus-Naur form, which is a set of productions from non-terminals, which are overarching grammatical structures, to more specific structures and terminals (tokens).
 As a simple example, the following is a grammar for parsing simple expressions.
 ```
 EXPRESION -> EXPRESSION + TERM | TERM
@@ -62,10 +62,10 @@ With this grammar, parsing the expression 5 + x * y would produce the following 
 ```
 In this example, EXPRESSIONs, TERMs, and FACTORs are non-terminals, and VALUEs, IDs and the symbols (+, \*) are all terminals.
 
-The parser used in this project is a recursive-descent parser. Each non-terminal in the grammar corresponds to a function of the parser. Within each relation of the grammar, the non-terminals on the right side of the relation correspond to calls to the corresponding functions, some of these calls being recursive. A parse tree is not explicitly built as an actual data structure but is built on the stack as a side-effect of the function calls. 
+The parser used in this project is a recursive-descent parser. Each non-terminal in the grammar corresponds to a function of the parser. Within each production of the grammar, the non-terminals on the right side of the production correspond to calls to the corresponding functions, some of these calls being recursive. A parse tree is not explicitly built as an actual data structure but is built on the stack as a side-effect of the function calls. Rather than build a tree and then pass that tree to the translator, calls are made to the translator within parsing subroutines. For this reason, some parser functions have extra parameters and returns related to translation. For example, paramList() returns a vector of var_dec (variable declarations). This information is used to generate translator instructions. ```translator.cpp``` does little actual work, it is esentially a library of helpful functions for performing the translation tasks within the parser. The enum ```inst_type``` in ```translator.h``` is a list of all the valid instructions.
 
 Since we are using a recursive descent parser, a simple grammar such as the one above cannot be used, since it contains left-recursion which would cause the parser to get stuck trying to parse the leftmost non-terminal.
-Here is the actual grammar for parsing expressions in this project, which eliminates left recursion:
+Here is the actual grammar for parsing expressions in this project, which eliminates left recursion and includes more operators.
 (The curly braces mean that piece of the relation can be repeated indefinitley)
 ```
 EXPRESSION  -> AND_TERM { | AND_TERM }
@@ -75,3 +75,7 @@ ADDSUB_TERM -> MULDIV_TERM { + or - MULDIV_TERM }
 MULDIV_TERM -> VALUE_TERM { * or / VALUE_TERM }
 VALUE_TERM  -> id | INT_LIT | FLOAT_LIT | CALL
 ```
+### Code Generation and the Virtual Machine
+
+After translation, we are left with a sequence of instructions which are almost as atomic as machine code, but are not runnable on any system. Codegen.cpp converts these instructions into valid x86-64 assembly for MacOS. Adding support for Linux will be trivial, however adding support for Windows will be more difficult. For this reason, and also because I would like to increase development speed on the parser / translator without having to keep working on codegen, I have started working on a virtual machine which can execute these instructions in real time.
+
