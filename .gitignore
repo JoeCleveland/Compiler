@@ -1,5 +1,7 @@
 .*
 !/.gitignore
+.vscode
+.idea
 a.out
 mac.out
 linux.out

@@ -1,12 +1,13 @@
 
 fn sum (int x, int y, int z) {
-    if x == 5 {
-        ret x + y + 5;
-    }   
-    ret 6;
+    if z == 5{
+    ret x + y + 5;
+    }
+    ret 0;
 }
 
 fn main {
-    ret sum(5, 5, 5);
+    int a = 5;
+    ret sum(a, 6, 5);
 }
 

@@ -1,5 +1,5 @@
-all: compiler.o parser.o translator.o symtable.o lexical.o codegen.o
-	g++ compiler.o parser.o translator.o symtable.o lexical.o codegen.o -o compiler -g
+all: compiler.o parser.o translator.o symtable.o lexical.o codegen.o vm.o
+	g++ compiler.o parser.o translator.o symtable.o lexical.o codegen.o vm.o -o compiler -g 
 compiler.o: compiler.cpp
 	g++ -std=c++11 -I . -c compiler.cpp -g
 parser.o: parser.cpp parser.h
@@ -12,5 +12,7 @@ lexical.o: lexical.cpp lexical.h
 	g++ -std=c++11 -I . -c lexical.cpp -g
 codegen.o: codegen.cpp codegen.h
 	g++ -std=c++11 -I . -c codegen.cpp -g
+vm.o: vm.cpp vm.h
+	g++ -std=c++11 -I . -c vm.cpp -g
 clean:
 	rm *.o

@@ -5,8 +5,10 @@
 #include "lexical.h"
 #include "parser.h"
 #include "codegen.h"
+#include "vm.h"
 
 int main(int argc, char** argv){
+    std::cout << "Getting schwifty..." << std::endl;
     std::ifstream codefile(argv[1]);
     std::stringstream codebuffer;
     codebuffer << codefile.rdbuf();
@@ -18,9 +20,8 @@ int main(int argc, char** argv){
         translator::printInstruction(i);
         codegen::writeLine(i);
     }
-    codegen::outputToFile("code.s");
-    //std::system("as code.s -o code");
-    //std::system("ld code -o code");
-    std::system("gcc code.s -o code");
+    //codegen::outputToFile("code.s");
+    //std::system("gcc code.s -o code");
+    vm::runProgram(translator::intermediateCode);
     return 0;
 }   
