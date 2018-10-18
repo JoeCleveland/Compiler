@@ -310,19 +310,59 @@ std::vector<translator::instruction> parser::expListPrime(symtable::table_tree* 
 }
 
 std::vector<translator::instruction> parser::ifStat(symtable::table_tree* table){
-    if(LOOK == IF){
-        advance();
-        exp_ret condition = expression(table, OR);
-        std::string jumpLabel = translator::getJumpLabel();
-        condition.code.push_back(translator::condJumpLine(condition.result, jumpLabel));
-        std::vector<translator::instruction> innerInsts = statList(table);
-        innerInsts.push_back(translator::instruction(translator::label, {jumpLabel}));
-        std::vector<translator::instruction> elseCode = elStat(table);
-        std::vector<translator::instruction> retCode = catVectors(condition.code, innerInsts); 
-        return catVectors(retCode, elseCode);
-    }
+    advance();//Precondition that LOOK points to an IF
+    std::vector<translator::instruction> outputCode;
+    exp_ret condition = expression(table, OR); //Evaluate expression
+    outputCode = condition.code;
+    std::string jumpLabel = translator::getJumpLabel();//Get a label
+    //Add a conditional jump after the expression code:
+    outputCode.push_back(translator::condJumpLine(condition.result, jumpLabel));
+    //Then generate code inside { ... } 
+    std::vector<translator::instruction> innerInsts = statList(table);
+    outputCode = catVectors(outputCode, innerInsts);
+    //Generate code for the else statement:
+    exp_ret elseRet = elStat(table);
+    //If and else or elif is present add a jump to the end of the chain
+    if(elseRet.result.size() > 0)
+        outputCode.push_back(translator::instruction(translator::jump, {elseRet.result}));
+    //Append the original label to this code:
+    outputCode.push_back(translator::instruction(translator::label, {jumpLabel}));
+    //Append all the code so that it is in the order of
+    //conditional jump code - statement code - {jump to end} - label - else code  
+    return catVectors(outputCode, elseRet.code);
 }
 
-std::vector<translator::instruction> parser::elStat(symtable::table_tree* table){
-    return std::vector<translator::instruction>();
+parser::exp_ret parser::elStat(symtable::table_tree* table){
+    if(LOOK == ELIF){
+        advance();
+        std::vector<translator::instruction> outputCode;
+        exp_ret condition = expression(table, OR); 
+        outputCode = condition.code;
+        std::string jumpLabel = translator::getJumpLabel();
+        outputCode.push_back(translator::condJumpLine(condition.result, jumpLabel));
+        std::vector<translator::instruction> innerInsts = statList(table);
+        outputCode = catVectors(outputCode, innerInsts);
+        exp_ret elseRet = elStat(table);
+        //For elif, we will return jumpLabel as end if there is no further else/elif
+        std::string endLabel;
+        if(elseRet.result.size() > 0){
+            outputCode.push_back(translator::instruction(translator::jump, {elseRet.result}));
+            endLabel = elseRet.result;
+        }
+        else    
+            endLabel = jumpLabel;
+        outputCode.push_back(translator::instruction(translator::label, {jumpLabel}));
+        return exp_ret(catVectors(outputCode, elseRet.code), endLabel);
+    }
+    else if(LOOK == ELSE){
+        advance();
+        std::vector<translator::instruction> outputCode;
+        outputCode = statList(table);
+        std::string endLabel = translator::getJumpLabel();
+        outputCode.push_back(translator::instruction(translator::label, {endLabel}));
+        return exp_ret(outputCode, endLabel);
+   }
+   else{
+       return exp_ret(std::vector<translator::instruction>(), "");
+   }
 }

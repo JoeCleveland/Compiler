@@ -7,7 +7,7 @@
 #include <string>
 
 namespace translator {
-    enum inst_type { assign, expression, params, vars, label, call, callarg, ret, condjump};
+    enum inst_type { assign, expression, params, vars, label, call, callarg, ret, condjump, jump};
     typedef struct instruction {
         inst_type type;
         std::vector<std::string> args;

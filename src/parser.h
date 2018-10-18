@@ -48,7 +48,7 @@ std::vector<translator::instruction> expList(symtable::table_tree* table);
 std::vector<translator::instruction> expListPrime(symtable::table_tree* table);
 //Parse if/elif/else blocks
 std::vector<translator::instruction> ifStat(symtable::table_tree* table);
-std::vector<translator::instruction> elStat(symtable::table_tree* table);
+exp_ret elStat(symtable::table_tree* table);
 //Other parser functions:
 void advance();
 void error(std::string message);

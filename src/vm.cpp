@@ -124,6 +124,10 @@ void execCondJump(translator::instruction inst){
         jumpTo(inst.args[1]);
 }
 
+void execJump(translator::instruction inst){
+    jumpTo(inst.args[0]);
+}
+
 void execute(translator::instruction inst){
     switch(inst.type){
         case translator::assign: execAssign(inst); break;
@@ -134,6 +138,7 @@ void execute(translator::instruction inst){
         case translator::callarg: execCallArg(inst); break;
         case translator::ret: execRet(inst); break;
         case translator::condjump: execCondJump(inst); break;
+        case translator::jump: execJump(inst); break;
     } 
 }
 

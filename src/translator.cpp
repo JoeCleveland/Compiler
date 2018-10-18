@@ -73,7 +73,19 @@ translator::instruction translator::condJumpLine(std::string result, std::string
 } 
 
 void translator::printInstruction(instruction i){
-    std::cout << i.type << " ";
+    std::string name;
+    switch(i.type){
+        case translator::assign: name = "asgn";  break;
+        case translator::expression: name = "expr";  break;
+        case translator::params: name = "parm";  break;
+        case translator::vars: name = "vars";  break;
+        case translator::call: name = "call";  break;
+        case translator::callarg: name = "clrg";  break;
+        case translator::ret: name = "retn";  break;
+        case translator::condjump: name = "cjmp";  break;
+        case translator::jump: name = "jump";  break;
+    }
+    std::cout << name << "\t";
     for(std::string s : i.args)
         std::cout << s << " "; 
     std::cout << std::endl;

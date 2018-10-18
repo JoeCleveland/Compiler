@@ -19,7 +19,7 @@ STAT_LIST   -> { STATEMENT STAT_LIST'
              | ε
 STAT_LIST'  -> STATEMENT STAT_LIST'
              | }
-STATEMENT   -> DEC_STAT | ASSIGN_STAT | RET_STAT
+STATEMENT   -> DEC_STAT | ASSIGN_STAT | RET_STAT | IF_STAT
 DEC_STAT    -> VAR_DEC DEC_STAT'
 DEC_STAT'   -> ;
              | = EXPRESSION ; 
@@ -34,3 +34,7 @@ EXP_LIST    -> ( EXPRESSION EXP_LIST'
              | ()
 EXP_LIST'   -> comma EXPRESSION EXP_LIST'
              | )
+IF_STAT     -> if EXPRESSION STAT_LIST EL_STAT
+             | elif EXPRESSION STAT_LIST EL_STAT
+EL_STAT     -> else STAT_LIST
+             | ε
