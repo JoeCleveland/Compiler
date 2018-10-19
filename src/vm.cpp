@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <unistd.h>
 
 #define FRAME frames.back()
 
@@ -11,14 +12,14 @@ typedef std::pair<std::string, int> vm_var;
 typedef struct stack_frame {
     vm_vars vars;
     vm_vars params;
+    std::string returnVar;
+    int callLocation;
 } stack_frame;
 
 int IP;
 std::vector<translator::instruction> code;
 std::vector<stack_frame> frames;
 std::vector<int> callParams;
-std::string returnLoc;
-int callLocation;
 
 int resolveValue(std::string varOrVal){
     std::string sub = varOrVal.substr(1, varOrVal.length());
@@ -66,7 +67,6 @@ void execExpression(translator::instruction inst){
     else if(inst.args[2] == "|")
         result = leftArg | rightArg;
     FRAME.vars.insert(vm_var(tempName, result));
-    std::cout << "VM: " << tempName << ":" << leftArg << ", " << rightArg << ":" << result << "\n"; 
 }
 
 /**
@@ -95,12 +95,12 @@ void execVars(translator::instruction inst){
  * Executes call and creates new stack frame
  **/
 void execCall(translator::instruction inst){
-    returnLoc = inst.args[0]; 
-    FRAME.vars.insert(vm_var(returnLoc, 0));
-    callLocation = IP;
-    jumpTo(inst.args[1]);
+    FRAME.vars.insert(vm_var(inst.args[0], 0));
     stack_frame sf;
     frames.push_back(sf);
+    FRAME.callLocation = IP;
+    FRAME.returnVar = inst.args[0]; 
+    jumpTo(inst.args[1]);
 }
 
 void execCallArg(translator::instruction inst){
@@ -112,10 +112,11 @@ void execRet(translator::instruction inst){
     int retVal = resolveValue(inst.args[0]);
     std::cout << "vm: RETURN " << retVal << std::endl;
     if(frames.size() > 1){
+        std::string retVar = FRAME.returnVar;
+        IP = FRAME.callLocation;
         frames.pop_back();
-        IP = callLocation;
+        FRAME.vars[retVar] = retVal;
     }
-    FRAME.vars[returnLoc] = retVal;
 }
 
 void execCondJump(translator::instruction inst){
@@ -151,10 +152,11 @@ void vm::runProgram(std::vector<translator::instruction> inputcode){
     jumpTo("main");
     while(running){
         translator::instruction inst = code.at(IP);
-        
+        translator::printInstruction(inst);        
         execute(inst);
         IP++;
         if(IP >= code.size())
             running = false;
+        //usleep(40000);
     }
 }

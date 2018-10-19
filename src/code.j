@@ -1,21 +1,14 @@
 
 
-fn sum (int x, int y, int z) {
-    int boo = 8;
-    if z == 5{
-        int boo = 1;
-    }
-    elif z == 4 {
-        int boo = 2;
+fn rec (int x) {
+    if x == 1 | x == 0 {
+        ret x;
     }
     else {
-        int boo = 3;
+        ret rec (x - 1) + rec (x - 2);
     }
-    ret boo;
 }
-
 fn main {
-    int a = 5;
-    ret sum(a, 6, 9);
+    ret rec(9);
 }
 

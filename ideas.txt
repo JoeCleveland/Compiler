@@ -1,25 +1,26 @@
 
-type node {
-    node l;
-    node r;
-    int val;
+class Car {
+    str make;
+    str model;
+    int price;
 }
 
-met:node init {
+metset Driveable {
+    met Drive (int speed);
+}
+
+met Car:Drive (int speed) {
 }
 
 fn main {
     int x = 5;
-    float y = 6.5;
-    node m;
-    m.val = 5;
-    parser.parseString
-    print parser.parserStatus;
-}
+    float y = 5.5;
+    ptr:int xx = ptrto x;
+    
+    for i from 0, x; {
+    }
 
-module parser {
-    int parserStatus;
-    fn parseString(string input){
-     ...
+    while i < 5 {
+    ptr:int xxx = pto xx;
     }
 }
